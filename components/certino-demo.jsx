@@ -2056,8 +2056,7 @@ function EmptyWalletState({ onConnect }) {
               Connect wallet
             </span>
             <span className="block text-xs text-[var(--text-secondary)] mt-0.5">
-              Email · Apple ID · Google · via{" "}
-              <span className="font-semibold text-[var(--text-secondary)]">Privy</span>
+              Email · Apple ID · Google
             </span>
           </span>
           <ArrowRight className="w-5 h-5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
