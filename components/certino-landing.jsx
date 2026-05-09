@@ -939,7 +939,7 @@ function DiagramBlock({ number, title, subtitle, body, children }) {
 
 function CertinoSchemaAxo() {
   return (
-    <svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" className="w-full h-auto">
+    <svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" className="w-full h-full" style={{ minHeight: "500px" }}>
 
 
 <defs>
@@ -1075,10 +1075,20 @@ function CertinoSchemaAxo() {
 
 function ArchitectureDiagram() {
   return (
-    <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-      {/* === LEFT 2/3: schema SVG === */}
-      <div className="lg:col-span-2">
-        <CertinoSchemaAxo />
+    <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+      {/* === LEFT 2/3: schema SVG — stretches to match right column height === */}
+      <div className="lg:col-span-2 flex">
+        <div
+          className="flex-1 rounded-3xl p-6 md:p-8 flex items-center justify-center"
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-sm)",
+            minHeight: "560px",
+          }}
+        >
+          <CertinoSchemaAxo />
+        </div>
       </div>
 
       {/* === RIGHT 1/3: step callouts stacked vertically === */}
@@ -1091,11 +1101,11 @@ function ArchitectureDiagram() {
         <ArchCallout
           step="02"
           title="Pool & threshold"
-          body="The protocol aggregates pulses across up to 10 small producers. When the pool reaches 1 MWh, a batch is ready."
+          body="The protocol aggregate pulses up to 1MWh, that are then provided to be sold on the market across all registered devices"
         />
         <ArchCallout
           step="03"
-          title="mintBatch( ) on Base"
+          title="mintBatch( ) on-chain"
           body="A single ERC-721 NFT mints with metadata pointing to the IPFS-stored breakdown of all contributing pulses."
           accent
         />
