@@ -2056,7 +2056,7 @@ function EmptyWalletState({ onConnect }) {
               Connect wallet
             </span>
             <span className="block text-xs text-[var(--text-secondary)] mt-0.5">
-              Email · Apple ID · Google
+              Email · Apple ID · Google <span className="opacity-70">(soon)</span>
             </span>
           </span>
           <ArrowRight className="w-5 h-5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
@@ -2861,7 +2861,7 @@ function EmptyWalletStateBuyer({ onConnect }) {
               Connect wallet
             </span>
             <span className="block text-xs text-[var(--text-secondary)] mt-0.5">
-              Email · Apple ID · Google
+              Email · Apple ID · Google <span className="opacity-70">(soon)</span>
             </span>
           </span>
           <ArrowRight className="w-5 h-5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
