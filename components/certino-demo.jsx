@@ -439,23 +439,32 @@ function Nav({ walletAddress, onConnect, onDisconnect, onBack, theme, setTheme }
     else onConnect?.();
   };
   return (
-    <nav className="flex items-center justify-between mb-8">
+    <nav
+      className="flex items-center justify-between gap-4 pl-3 pr-2 py-2 rounded-full mb-8"
+      style={{
+        background: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(12px)",
+        boxShadow:
+          "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+        border: "1px solid var(--border)",
+      }}
+    >
       <div className="flex items-center gap-3">
         {onBack && (
           <button
             onClick={onBack}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors -ml-1"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
             style={{ color: "var(--text-secondary)" }}
             title="Back to landing"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
         )}
-        <HilierMark className="w-9 h-10" />
+        <HilierMark className="w-7 h-8" />
         <div className="flex flex-col leading-none">
           <span className="text-xl font-extrabold tracking-tight">Certino</span>
           <span
-            className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+            className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
             style={{ color: "var(--accent)" }}
           >
             Producer
@@ -2597,51 +2606,35 @@ function LandingView({ theme, setTheme, onSelectProducer, onSelectBuyer }) {
       <ThemeStyles />
 
       <div className="max-w-6xl mx-auto px-6 py-10 md:py-16 min-h-screen flex flex-col">
-        {/* Top brand bar with theme toggle */}
-        <div className="flex items-center justify-between mb-12 md:mb-16">
-          <div className="flex items-center gap-3">
-            <HilierMark className="w-9 h-10" />
+        {/* Pill header — mirrors landing-page Header */}
+        <div
+          className="flex items-center justify-between gap-4 pl-5 pr-2 py-2 rounded-full mb-12 md:mb-16"
+          style={{
+            background: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(12px)",
+            boxShadow:
+              "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {/* Logo -> back to landing */}
+          <a href="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <HilierMark className="w-7 h-8" />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-extrabold tracking-tight">Certino</span>
               <span
-                className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+                className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
                 style={{ color: "var(--text-tertiary)" }}
               >
                 by Treetino
               </span>
             </div>
-          </div>
+          </a>
+
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
 
-        {/* Hero */}
-        <div className="text-center max-w-4xl mx-auto mb-12 md:mb-14">
-          <span
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border)",
-              color: "var(--text-secondary)",
-            }}
-          >
-            <Sparkles className="w-3 h-3" style={{ color: "var(--accent)" }} />
-            EnergyTag GC Standard
-          </span>
-
-          <h1 className="display text-5xl md:text-7xl font-medium leading-[1.02] mb-5 tracking-tight">
-            Clean energy isn't scarce.<br />
-            <span className="italic" style={{ color: "var(--accent)" }}>
-              At the right hour
-            </span>, it is.
-          </h1>
-
-          <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
-            Premium carbon credits for small grid enhancers — your fair share
-            of a market built around utilities.
-          </p>
-        </div>
-
-        {/* Role chooser */}
+        {/* Role chooser — index for producer / buyer */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
           <RoleCard
             role="producer"
@@ -2852,21 +2845,30 @@ function BuyerView({ theme, setTheme, onBack }) {
 
       <div className="max-w-6xl mx-auto px-6 py-6 md:py-10">
         {/* ============ NAV ============ */}
-        <nav className="flex items-center justify-between mb-8">
+        <nav
+          className="flex items-center justify-between gap-4 pl-3 pr-2 py-2 rounded-full mb-8"
+          style={{
+            background: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(12px)",
+            boxShadow:
+              "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+            border: "1px solid var(--border)",
+          }}
+        >
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               style={{ color: "var(--text-secondary)" }}
               aria-label="Back to landing"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <HilierMark className="w-9 h-10" />
+            <HilierMark className="w-7 h-8" />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-extrabold tracking-tight">Certino</span>
               <span
-                className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+                className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
                 style={{ color: "var(--accent)" }}
               >
                 Buyer
@@ -3164,8 +3166,7 @@ function EmptyWalletStateBuyer({ onConnect }) {
               Connect wallet
             </span>
             <span className="block text-xs text-[var(--text-secondary)] mt-0.5">
-              Email · Apple ID · Google · via{" "}
-              <span className="font-semibold text-[var(--text-secondary)]">Privy</span>
+              Email · Apple ID · Google <span className="opacity-70">(soon)</span>
             </span>
           </span>
           <ArrowRight className="w-5 h-5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
