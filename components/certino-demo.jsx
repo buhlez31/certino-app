@@ -2318,17 +2318,6 @@ function LandingView({ theme, setTheme, onSelectProducer, onSelectBuyer }) {
             </div>
           </a>
 
-          {/* Nav -> jumps to landing sections */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
-            <a
-              href="/#standards"
-              className="transition-colors hover:opacity-70"
-              style={{ color: "var(--text-primary)" }}
-            >
-              Standards
-            </a>
-          </nav>
-
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
 
