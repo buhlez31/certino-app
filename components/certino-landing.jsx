@@ -86,18 +86,18 @@ function Header() {
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
             <a
-              href="#how-it-works"
-              className="transition-colors hover:opacity-70"
-              style={{ color: "var(--text-primary)" }}
-            >
-              How it works
-            </a>
-            <a
               href="#problem"
               className="transition-colors hover:opacity-70"
               style={{ color: "var(--text-primary)" }}
             >
               The problem
+            </a>
+            <a
+              href="#how-it-works"
+              className="transition-colors hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              How it works
             </a>
             <a
               href="#standards"
