@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       ok: true,
       txHash: tx.hash,
       tokenId: issued?.args.tokenId.toString() ?? null,
-      etherscanUrl: `https://sepolia.etherscan.io/tx/${tx.hash}`,
+      explorerUrl: `https://amoy.polygonscan.com/tx/${tx.hash}`,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Mint failed";
