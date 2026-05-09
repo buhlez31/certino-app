@@ -1101,7 +1101,7 @@ function PendingDeviceDetail({ device, onDeregister }) {
           <div>
             <h3 className="display text-2xl font-medium mb-2 leading-tight">
               Once approved, this device will{" "}
-              <span className="italic" style={{ color: "var(--accent)" }} style={{ paddingRight: "0.06em" }}>auto-issue</span> hourly
+              <span className="italic" style={{ color: "var(--accent)", paddingRight: "0.06em" }}>auto-issue</span> hourly
             </h3>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">
               The protocol will start receiving meter readings and emitting an
@@ -2726,7 +2726,7 @@ function BuyerView({ theme, setTheme, onBack }) {
                     Live marketplace · small producers across CZ
                   </div>
                   <h3 className="display text-2xl font-medium">
-                    Carbon credits direct from <span className="italic" style={{ color: "var(--accent)" }} style={{ paddingRight: "0.06em" }}>small</span> verified producers
+                    Carbon credits direct from <span className="italic" style={{ color: "var(--accent)", paddingRight: "0.06em" }}>small</span> verified producers
                   </h3>
                 </div>
 
