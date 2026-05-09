@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import {
+  ArrowDown,
   ArrowRight,
   ArrowUpRight,
   Sparkles,
@@ -174,15 +175,17 @@ function Hero() {
         </p>
 
         <a
-          href="/app"
-          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-base font-bold transition-all hover:scale-[1.02]"
+          href="#problem"
+          aria-label="Scroll to next section"
+          className="scroll-cue inline-flex items-center justify-center w-12 h-12 rounded-full transition-all hover:scale-[1.08]"
           style={{
-            background: "var(--text-primary)",
-            color: "var(--bg-page)",
+            border: "1px solid var(--border-strong)",
+            color: "var(--text-primary)",
+            background: "rgba(255, 255, 255, 0.6)",
+            backdropFilter: "blur(6px)",
           }}
         >
-          Launch App
-          <ArrowRight className="w-4 h-4" />
+          <ArrowDown className="w-5 h-5" />
         </a>
       </div>
     </section>
@@ -821,7 +824,6 @@ function HowItWorks() {
             <PremiumTierDiagram />
           </DiagramColumn>
         </div>
-        <LaunchAppCta />
       </div>
     </section>
   );
@@ -903,7 +905,6 @@ function Architecture() {
 
         {/* The hub-spoke diagram (already 2/3 + 1/3 internally) */}
         <ArchitectureDiagram />
-        <LaunchAppCta />
       </div>
     </section>
   );
@@ -1942,6 +1943,15 @@ function ThemeStyles() {
       }
 
       html { scroll-behavior: smooth; }
+
+      @keyframes scrollCueBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(8px); }
+      }
+      .scroll-cue { animation: scrollCueBounce 1.6s ease-in-out infinite; }
+      @media (prefers-reduced-motion: reduce) {
+        .scroll-cue { animation: none; }
+      }
     `}</style>
   );
 }
