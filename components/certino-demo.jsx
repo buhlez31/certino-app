@@ -2321,20 +2321,6 @@ function LandingView({ theme, setTheme, onSelectProducer, onSelectBuyer }) {
           {/* Nav -> jumps to landing sections */}
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
             <a
-              href="/#problem"
-              className="transition-colors hover:opacity-70"
-              style={{ color: "var(--text-primary)" }}
-            >
-              The problem
-            </a>
-            <a
-              href="/#how-it-works"
-              className="transition-colors hover:opacity-70"
-              style={{ color: "var(--text-primary)" }}
-            >
-              How it works
-            </a>
-            <a
               href="/#standards"
               className="transition-colors hover:opacity-70"
               style={{ color: "var(--text-primary)" }}
