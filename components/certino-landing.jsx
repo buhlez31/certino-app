@@ -588,6 +588,7 @@ function Problem() {
             <DayCurveDiagram />
           </div>
         </div>
+        <LaunchAppCta />
       </div>
     </section>
   );
@@ -821,6 +822,7 @@ function HowItWorks() {
             <PremiumTierDiagram />
           </DiagramColumn>
         </div>
+        <LaunchAppCta />
       </div>
     </section>
   );
@@ -902,6 +904,7 @@ function Architecture() {
 
         {/* The hub-spoke diagram (already 2/3 + 1/3 internally) */}
         <ArchitectureDiagram />
+        <LaunchAppCta />
       </div>
     </section>
   );
@@ -1130,7 +1133,7 @@ function ArchitectureDiagram() {
         <ArchCallout
           step="02"
           title="Pool & threshold"
-          body="The protocol aggregate pulses up to 1MWh, that are then provided to be sold on the market across all registered devices"
+          body="The protocol aggregate pulses up to 1MWh and one hour, that are then provided to be sold on the market across all registered devices"
         />
         <ArchCallout
           step="03"
@@ -1690,6 +1693,17 @@ function Closing() {
             </p>
             <div className="flex flex-wrap gap-3">
               <a
+                href="/app"
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-base font-bold transition-all hover:scale-[1.02]"
+                style={{
+                  background: "var(--lime, #D0FF14)",
+                  color: "var(--text-primary)",
+                }}
+              >
+                Launch App
+                <ArrowRight className="w-4 h-4" />
+              </a>
+              <a
                 href="#"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-base font-semibold transition-all"
                 style={{
@@ -1816,6 +1830,26 @@ function Footer() {
 // ==========================================================================
 // SHARED COMPONENTS
 // ==========================================================================
+
+function LaunchAppCta({ align = "center", className = "" }) {
+  const justify =
+    align === "left" ? "justify-start" : align === "right" ? "justify-end" : "justify-center";
+  return (
+    <div className={`flex ${justify} mt-12 md:mt-16 ${className}`}>
+      <a
+        href="/app"
+        className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-base font-bold transition-all hover:scale-[1.02]"
+        style={{
+          background: "var(--text-primary)",
+          color: "var(--bg-page)",
+        }}
+      >
+        Launch App
+        <ArrowRight className="w-4 h-4" />
+      </a>
+    </div>
+  );
+}
 
 function SectionKicker({ label, tone = "accent" }) {
   const colorMap = {
