@@ -44,6 +44,7 @@ export default function CertinoLanding() {
       <ThemeStyles />
       <Header />
       <Hero />
+      <Architecture />
       <HowItWorks />
       <Problem />
       <Solution />
@@ -836,6 +837,48 @@ function DiagramColumn({ number, title, subtitle, children }) {
   );
 }
 
+// ==========================================================================
+// ARCHITECTURE SECTION — schema-based hub-spoke diagram
+// 2/3 width SVG schema on the left, 1/3 column with step callouts on the right
+// ==========================================================================
+
+function Architecture() {
+  return (
+    <section
+      className="py-20 md:py-28"
+      style={{ borderTop: "1px solid var(--border)" }}
+    >
+      <div className="max-w-7xl mx-auto px-6">
+        <SectionKicker label="Protocol architecture" tone="accent" />
+
+        <div className="md:max-w-3xl mt-6 mb-12 md:mb-14">
+          <h2
+            className="display text-4xl md:text-5xl leading-[1.05]"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            House, grid, company —{" "}
+            <span className="italic" style={{ color: "var(--accent)" }}>
+              the protocol at the centre.
+            </span>
+          </h2>
+          <p
+            className="text-base md:text-lg leading-relaxed mt-5 max-w-2xl"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Three real-world parties, one protocol mediating the value flow.
+            The household exports kWh through the grid; the company pays for
+            verified certificates; the protocol validates, mints, matches, and
+            settles the proceeds back.
+          </p>
+        </div>
+
+        {/* The hub-spoke diagram (already 2/3 + 1/3 internally) */}
+        <ArchitectureDiagram />
+      </div>
+    </section>
+  );
+}
+
 function DiagramBlock({ number, title, subtitle, body, children }) {
   return (
     <div className="mb-24 last:mb-0">
@@ -894,522 +937,152 @@ function DiagramBlock({ number, title, subtitle, body, children }) {
 // (10 hourly pulses → 1 MWh → mintBatch on Base).
 // ==========================================================================
 
+function CertinoSchemaAxo() {
+  return (
+    <svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" className="w-full h-auto">
+
+
+<defs>
+  <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+    <feOffset dx="0" dy="3"/>
+    <feComponentTransfer><feFuncA type="linear" slope="0.10"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<rect x="40" y="80" width="1120" height="260" rx="14" fill="#E8EFFF" opacity="0.25"/>
+<text x="60" y="105" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#2A4DD0" letterSpacing="2.5">LAYER · PROTOCOL</text>
+<rect x="40" y="470" width="1120" height="220" rx="14" fill="#F1F5F9" opacity="0.5"/>
+<text x="60" y="495" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#94A3B8" letterSpacing="2.5">LAYER · GRID</text>
+<line x1="218.3" y1="488.5" x2="544.8" y2="356.0" stroke="#FF6B4A" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="4 5"><animate attributeName="stroke-dashoffset" from="0" to="-9" dur="1.4s" repeatCount="indefinite"/></line>
+<path d="M544.8 356.0 L536.3 364.3 L532.9 356.0 Z" fill="#FF6B4A"/>
+<text x="388.3" y="441.9" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#FF6B4A" textAnchor="middle" letterSpacing="1.2">ORACLE</text>
+<line x1="526.7" y1="311.5" x2="200.2" y2="444.0" stroke="#2A4DD0" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="4 5"><animate attributeName="stroke-dashoffset" from="0" to="-9" dur="1.4s" repeatCount="indefinite"/></line>
+<path d="M200.2 444.0 L208.7 435.7 L212.1 444.0 Z" fill="#2A4DD0"/>
+<text x="356.7" y="364.1" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#2A4DD0" textAnchor="middle" letterSpacing="1.2">YIELD</text>
+<line x1="600.0" y1="470.0" x2="600.0" y2="355.0" stroke="#475569" strokeWidth="1.4" strokeLinecap="round" strokeDasharray="3 6"><animate attributeName="stroke-dashoffset" from="0" to="-9" dur="1.6s" repeatCount="indefinite"/></line>
+<path d="M600.0 355.0 L604.5 366.0 L595.5 366.0 Z" fill="#475569"/>
+<text x="544.0" y="415.5" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#475569" textAnchor="middle" letterSpacing="1.2">VERIFICATION</text>
+<line x1="655.6" y1="356.0" x2="981.9" y2="483.7" stroke="#FF6B4A" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="4 5"><animate attributeName="stroke-dashoffset" from="0" to="-9" dur="1.4s" repeatCount="indefinite"/></line>
+<path d="M981.9 483.7 L970.1 483.9 L973.3 475.5 Z" fill="#FF6B4A"/>
+<text x="812.2" y="439.6" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#FF6B4A" textAnchor="middle" letterSpacing="1.2">CERTIFICATE</text>
+<line x1="999.4" y1="439.0" x2="673.1" y2="311.3" stroke="#2A4DD0" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="4 5"><animate attributeName="stroke-dashoffset" from="0" to="-9" dur="1.4s" repeatCount="indefinite"/></line>
+<path d="M673.1 311.3 L684.9 311.1 L681.7 319.5 Z" fill="#2A4DD0"/>
+<text x="842.8" y="361.4" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#2A4DD0" textAnchor="middle" letterSpacing="1.2">PAYMENT</text>
+<line x1="60" y1="620" x2="1140" y2="620" stroke="#CBD5E1" strokeWidth="1.5"/>
+<line x1="90" y1="617" x2="90" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="160" y1="617" x2="160" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="230" y1="617" x2="230" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="300" y1="617" x2="300" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="370" y1="617" x2="370" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="440" y1="617" x2="440" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="510" y1="617" x2="510" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="580" y1="617" x2="580" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="650" y1="617" x2="650" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="720" y1="617" x2="720" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="790" y1="617" x2="790" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="860" y1="617" x2="860" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="930" y1="617" x2="930" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="1000" y1="617" x2="1000" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="1070" y1="617" x2="1070" y2="623" stroke="#E2E8F0" strokeWidth="1"/>
+<line x1="284.0" y1="620.0" x2="522.0" y2="620.0" stroke="#64748B" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="5 6"><animate attributeName="stroke-dashoffset" from="0" to="-11" dur="1.0s" repeatCount="indefinite"/></line>
+<path d="M522.0 620.0 L511.0 624.5 L511.0 615.5 Z" fill="#64748B"/>
+<text x="403.0" y="609.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#64748B" textAnchor="middle" letterSpacing="1.2">ELECTRICITY</text>
+<line x1="678.0" y1="620.0" x2="916.0" y2="620.0" stroke="#64748B" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="5 6"><animate attributeName="stroke-dashoffset" from="0" to="-11" dur="1.0s" repeatCount="indefinite"/></line>
+<path d="M916.0 620.0 L905.0 624.5 L905.0 615.5 Z" fill="#64748B"/>
+<text x="797.0" y="609.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#64748B" textAnchor="middle" letterSpacing="1.2">ELECTRICITY</text>
+<polygon points="251.8,567.3 206.8,593.3 206.8,562.1 251.8,536.1" fill="#2A4DD0" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<polygon points="193.2,533.5 251.8,567.3 251.8,536.1 193.2,502.3" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<polygon points="193.2,502.3 251.8,536.1 222.5,495.8" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<polygon points="251.8,536.1 206.8,562.1 177.5,521.8 222.5,495.8" fill="#FF8869" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<line x1="242.0" y1="522.7" x2="197.0" y2="548.7" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
+<line x1="232.3" y1="509.2" x2="187.2" y2="535.2" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
+<line x1="229.3" y1="549.1" x2="200.0" y2="508.8" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
+<polygon points="218.0,547.8 227.0,553.0 227.0,536.1 218.0,530.9" fill="white" stroke="#0F172A" strokeWidth="0.9"/>
+<polygon points="234.9,569.5 223.6,576.0 223.6,563.0 234.9,556.5" fill="white" opacity="0.85"/>
+<polygon points="259.7,591.4 248.4,597.9 248.4,581.0 259.7,574.5" fill="#E8EFFF" stroke="#0F172A" strokeWidth="1"/>
+<polygon points="243.9,582.2 259.7,591.4 259.7,574.5 243.9,565.4" fill="white" stroke="#0F172A" strokeWidth="1"/>
+<polygon points="243.9,565.4 259.7,574.5 248.4,581.0 232.6,571.9" fill="#E8EFFF" stroke="#0F172A" strokeWidth="1"/>
+<path d="M251.3,574.9 L249.3,578.4 L251.3,578.4 L250.3,581.9 L253.8,577.9 L251.8,577.9 Z" fill="#2A4DD0" stroke="none"/>
+<line x1="600.0" y1="488.0" x2="645.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="600.0" y1="488.0" x2="645.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="600.0" y1="488.0" x2="600.0" y2="592.0" stroke="#FF6B4A" strokeWidth="2.2" strokeDasharray="3 4"><animate attributeName="stroke-dashoffset" from="0" to="-14" dur="0.8s" repeatCount="indefinite"/></line>
+<line x1="600.0" y1="488.0" x2="555.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="600.0" y1="488.0" x2="555.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="514.0" x2="645.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="514.0" x2="600.0" y2="592.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="514.0" x2="555.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="514.0" x2="555.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="566.0" x2="600.0" y2="592.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="566.0" x2="555.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="645.0" y1="566.0" x2="555.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="600.0" y1="592.0" x2="555.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="600.0" y1="592.0" x2="555.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<line x1="555.0" y1="566.0" x2="555.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
+<circle cx="600.0" cy="488.0" r="6" fill="#FF6B4A" stroke="white" strokeWidth="2"/>
+<circle cx="645.0" cy="514.0" r="5" fill="#2A4DD0" stroke="white" strokeWidth="1.5"/>
+<circle cx="645.0" cy="566.0" r="5" fill="#2A4DD0" stroke="white" strokeWidth="1.5"/>
+<circle cx="600.0" cy="592.0" r="6" fill="#FF6B4A" stroke="white" strokeWidth="2"/>
+<circle cx="555.0" cy="566.0" r="5" fill="#2A4DD0" stroke="white" strokeWidth="1.5"/>
+<circle cx="555.0" cy="514.0" r="5" fill="#2A4DD0" stroke="white" strokeWidth="1.5"/>
+<polygon points="1041.6,561.6 1004.2,583.2 1004.2,516.0 1041.6,494.4" fill="#2A4DD0" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<polygon points="995.8,535.2 1041.6,561.6 1041.6,494.4 995.8,468.0" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<polygon points="995.8,468.0 1041.6,494.4 1004.2,516.0 958.4,489.6" fill="#E8EFFF" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<line x1="995.8" y1="518.4" x2="1041.6" y2="544.8" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<line x1="1041.6" y1="544.8" x2="1004.2" y2="566.4" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<line x1="995.8" y1="501.6" x2="1041.6" y2="528.0" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<line x1="1041.6" y1="528.0" x2="1004.2" y2="549.6" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<line x1="995.8" y1="484.8" x2="1041.6" y2="511.2" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<line x1="1041.6" y1="511.2" x2="1004.2" y2="532.8" stroke="#0F172A" strokeWidth="0.6" opacity="0.7"/>
+<polygon points="1004.9,485.3 1009.6,488.0 1009.6,480.8 1004.9,478.1" fill="white" opacity="0.92"/>
+<polygon points="1027.8,498.5 1032.5,501.2 1032.5,494.0 1027.8,491.3" fill="white" opacity="0.92"/>
+<polygon points="1004.9,502.1 1009.6,504.8 1009.6,497.6 1004.9,494.9" fill="white" opacity="0.92"/>
+<polygon points="1027.8,515.3 1032.5,518.0 1032.5,510.8 1027.8,508.1" fill="white" opacity="0.92"/>
+<polygon points="1004.9,518.9 1009.6,521.6 1009.6,514.4 1004.9,511.7" fill="white" opacity="0.92"/>
+<polygon points="1027.8,532.1 1032.5,534.8 1032.5,527.6 1027.8,524.9" fill="white" opacity="0.92"/>
+<polygon points="1004.9,535.7 1009.6,538.4 1009.6,531.2 1004.9,528.5" fill="white" opacity="0.92"/>
+<polygon points="1027.8,548.9 1032.5,551.6 1032.5,544.4 1027.8,541.7" fill="white" opacity="0.92"/>
+<polygon points="1034.6,510.5 1029.9,513.1 1029.9,506.0 1034.6,503.3" fill="white" opacity="0.7"/>
+<polygon points="1015.8,521.2 1011.2,524.0 1011.2,516.8 1015.8,514.1" fill="white" opacity="0.7"/>
+<polygon points="1034.6,527.3 1029.9,530.0 1029.9,522.8 1034.6,520.1" fill="white" opacity="0.7"/>
+<polygon points="1015.8,538.1 1011.2,540.8 1011.2,533.6 1015.8,530.9" fill="white" opacity="0.7"/>
+<polygon points="1034.6,544.1 1029.9,546.8 1029.9,539.6 1034.6,536.9" fill="white" opacity="0.7"/>
+<polygon points="1015.8,554.9 1011.2,557.6 1011.2,550.4 1015.8,547.7" fill="white" opacity="0.7"/>
+<polygon points="1034.6,560.9 1029.9,563.6 1029.9,556.4 1034.6,553.7" fill="white" opacity="0.7"/>
+<polygon points="1015.8,571.7 1011.2,574.4 1011.2,567.2 1015.8,564.5" fill="white" opacity="0.7"/>
+<polygon points="1015.1,546.3 1022.3,550.5 1022.3,539.7 1015.1,535.5" fill="#0F172A" stroke="none"/>
+<text x="200.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Household</text><text x="200.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">PRODUCER</text>
+<text x="600.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Grid</text><text x="600.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">ČEPS · DSO</text>
+<text x="1000.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Company</text><text x="1000.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">BUYER</text>
+<path d="M600.0 100.0 L705.0 169.6 L705.0 289.6 L600.0 340.0 L495.0 289.6 L495.0 169.6 Z" fill="white" stroke="#2A4DD0" strokeWidth="2" filter="url(#softShadow)"/>
+<path d="M600.0 100.0 L705.0 169.6 L600.0 214.0 L495.0 169.6 Z" fill="#E8EFFF" stroke="#2A4DD0" strokeWidth="2"/>
+<text x="600" y="154.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#2A4DD0" textAnchor="middle" letterSpacing="3">CERTINO</text>
+<text x="600" y="181.6" fontFamily="Fraunces, serif" fontSize="17" fontStyle="italic" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">protocol</text>
+<line x1="545" y1="204.4" x2="655" y2="204.4" stroke="#E2E8F0" strokeWidth="1"/>
+<text x="535" y="224.8" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#2A4DD0" letterSpacing="1.5">01</text>
+<text x="558" y="224.8" fontFamily="Plus Jakarta Sans, Inter, sans-serif" fontSize="12" fontWeight="500" fill="#0F172A" letterSpacing="0">Validate energy</text>
+<text x="535" y="243.8" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#FF6B4A" letterSpacing="1.5">02</text>
+<text x="558" y="243.8" fontFamily="Plus Jakarta Sans, Inter, sans-serif" fontSize="12" fontWeight="500" fill="#0F172A" letterSpacing="0">Issue certificate</text>
+<text x="535" y="262.8" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#2A4DD0" letterSpacing="1.5">03</text>
+<text x="558" y="262.8" fontFamily="Plus Jakarta Sans, Inter, sans-serif" fontSize="12" fontWeight="500" fill="#0F172A" letterSpacing="0">Match buyers</text>
+<text x="535" y="281.8" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="700" fill="#2A4DD0" letterSpacing="1.5">04</text>
+<text x="558" y="281.8" fontFamily="Plus Jakarta Sans, Inter, sans-serif" fontSize="12" fontWeight="500" fill="#0F172A" letterSpacing="0">Distribute yield</text>
+
+    </svg>
+  );
+}
+
 function ArchitectureDiagram() {
   return (
-    <div>
-      <svg
-        viewBox="0 0 920 540"
-        className="w-full h-auto"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <defs>
-          {/* Marker for arrows */}
-          <marker
-            id="arrow-teal"
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#0F3B47" />
-          </marker>
-          <marker
-            id="arrow-navy"
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#1F2E5C" />
-          </marker>
-          <marker
-            id="arrow-grey"
-            viewBox="0 0 10 10"
-            refX="9"
-            refY="5"
-            markerWidth="7"
-            markerHeight="7"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 5 L 0 10 Z" fill="#7D9BA4" />
-          </marker>
-          {/* Hex pattern for protocol disc background */}
-          <radialGradient id="protocol-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#D0FF14" stopOpacity="0.18" />
-            <stop offset="60%" stopColor="#D0FF14" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+    <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+      {/* === LEFT 2/3: schema SVG === */}
+      <div className="lg:col-span-2">
+        <CertinoSchemaAxo />
+      </div>
 
-        {/* === GRID (top) === */}
-        <g>
-          {/* Pylon icon — simple line drawing */}
-          <g transform="translate(420, 30)">
-            <path
-              d="M 0 80 L 30 0 L 60 80 M 10 50 L 50 50 M 6 65 L 54 65 M 0 80 L 60 80"
-              fill="none"
-              stroke="#7D9BA4"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Label box */}
-            <rect
-              x="-32"
-              y="92"
-              width="124"
-              height="34"
-              rx="8"
-              fill="#FFFFFF"
-              stroke="#7D9BA4"
-              strokeWidth="1.5"
-            />
-            <text
-              x="30"
-              y="106"
-              textAnchor="middle"
-              style={{
-                fontFamily: "'Hanken Grotesk', sans-serif",
-                fontSize: "13px",
-                fontWeight: 700,
-                fill: "#15212A",
-              }}
-            >
-              Grid
-            </text>
-            <text
-              x="30"
-              y="120"
-              textAnchor="middle"
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "9px",
-                fill: "#7D9BA4",
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-              }}
-            >
-              Verifies metering
-            </text>
-          </g>
-        </g>
-
-        {/* === HOUSEHOLD (bottom-left) === */}
-        <g transform="translate(80, 360)">
-          {/* House icon */}
-          <path
-            d="M 0 40 L 40 0 L 80 40 L 80 100 L 0 100 Z"
-            fill="#FCFAF5"
-            stroke="#0F3B47"
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
-          {/* Roof solar accent */}
-          <path
-            d="M 8 36 L 40 8 L 72 36 L 40 36 Z"
-            fill="#D0FF14"
-            opacity="0.6"
-          />
-          <line x1="40" y1="8" x2="40" y2="36" stroke="#0F3B47" strokeWidth="1.5" />
-          {/* Door */}
-          <rect x="32" y="68" width="16" height="32" fill="#0F3B47" />
-          {/* Window */}
-          <rect
-            x="14"
-            y="56"
-            width="14"
-            height="14"
-            fill="#D0FF14"
-            opacity="0.85"
-            stroke="#0F3B47"
-            strokeWidth="1"
-          />
-          <rect
-            x="52"
-            y="56"
-            width="14"
-            height="14"
-            fill="#D0FF14"
-            opacity="0.85"
-            stroke="#0F3B47"
-            strokeWidth="1"
-          />
-          {/* Label */}
-          <text
-            x="40"
-            y="125"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'Hanken Grotesk', sans-serif",
-              fontSize: "14px",
-              fontWeight: 700,
-              fill: "#15212A",
-            }}
-          >
-            Household
-          </text>
-          <text
-            x="40"
-            y="142"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fill: "#7D9BA4",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            Producer · Solar
-          </text>
-        </g>
-
-        {/* === COMPANY (bottom-right) === */}
-        <g transform="translate(760, 360)">
-          {/* Building icon */}
-          <rect
-            x="0"
-            y="20"
-            width="80"
-            height="80"
-            fill="#FCFAF5"
-            stroke="#0F3B47"
-            strokeWidth="2"
-            rx="3"
-          />
-          {/* Top accent */}
-          <rect
-            x="0"
-            y="20"
-            width="80"
-            height="14"
-            fill="#1F2E5C"
-            rx="3"
-          />
-          {/* Windows grid */}
-          <g fill="#D0FF14" fillOpacity="0.7" stroke="#0F3B47" strokeWidth="1">
-            <rect x="10" y="42" width="14" height="14" />
-            <rect x="32" y="42" width="14" height="14" />
-            <rect x="54" y="42" width="14" height="14" />
-            <rect x="10" y="62" width="14" height="14" />
-            <rect x="32" y="62" width="14" height="14" />
-            <rect x="54" y="62" width="14" height="14" />
-            <rect x="10" y="82" width="14" height="14" />
-            <rect x="54" y="82" width="14" height="14" />
-          </g>
-          {/* Door */}
-          <rect x="32" y="82" width="14" height="18" fill="#0F3B47" />
-          {/* Label */}
-          <text
-            x="40"
-            y="125"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'Hanken Grotesk', sans-serif",
-              fontSize: "14px",
-              fontWeight: 700,
-              fill: "#15212A",
-            }}
-          >
-            Company
-          </text>
-          <text
-            x="40"
-            y="142"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fill: "#7D9BA4",
-              letterSpacing: "0.1em",
-              textTransform: "uppercase",
-            }}
-          >
-            Buyer · Scope 2
-          </text>
-        </g>
-
-        {/* === ELECTRICITY ARROWS through grid (top arc) === */}
-        {/* Household → Grid */}
-        <path
-          d="M 145 360 Q 220 220, 410 110"
-          fill="none"
-          stroke="#7D9BA4"
-          strokeWidth="1.5"
-          strokeDasharray="3 3"
-          markerEnd="url(#arrow-grey)"
-          opacity="0.7"
-        />
-        <text
-          x="220"
-          y="220"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "10px",
-            fill: "#7D9BA4",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-          transform="rotate(-38 220 220)"
-        >
-          electricity
-        </text>
-
-        {/* Grid → Company */}
-        <path
-          d="M 510 110 Q 700 220, 800 360"
-          fill="none"
-          stroke="#7D9BA4"
-          strokeWidth="1.5"
-          strokeDasharray="3 3"
-          markerEnd="url(#arrow-grey)"
-          opacity="0.7"
-        />
-        <text
-          x="700"
-          y="200"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "10px",
-            fill: "#7D9BA4",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-          transform="rotate(36 700 200)"
-        >
-          electricity
-        </text>
-
-        {/* === PROTOCOL HUB (centre) === */}
-        <g transform="translate(460, 270)">
-          {/* Glow */}
-          <circle cx="0" cy="0" r="120" fill="url(#protocol-glow)" />
-          {/* Hexagon */}
-          <path
-            d="M 0 -90 L 78 -45 L 78 45 L 0 90 L -78 45 L -78 -45 Z"
-            fill="#15212A"
-            stroke="#0F3B47"
-            strokeWidth="2.5"
-          />
-          {/* Inner hex top face */}
-          <path
-            d="M 0 -90 L 78 -45 L 0 0 L -78 -45 Z"
-            fill="#0F3B47"
-            opacity="0.7"
-          />
-
-          {/* Label */}
-          <text
-            x="0"
-            y="-50"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fill: "#D0FF14",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-            }}
-          >
-            Certino Protocol
-          </text>
-
-          {/* 4 Functions list */}
-          <g
-            style={{
-              fontFamily: "'Hanken Grotesk', sans-serif",
-              fontSize: "10.5px",
-              fontWeight: 600,
-              fill: "#F6F1E7",
-            }}
-          >
-            <text x="0" y="-20" textAnchor="middle">1 · Validate energy</text>
-            <text x="0" y="-2" textAnchor="middle">2 · Issue certificate</text>
-            <text x="0" y="16" textAnchor="middle">3 · Match buyers</text>
-            <text x="0" y="34" textAnchor="middle">4 · Distribute proceeds</text>
-          </g>
-
-          {/* Live pulse */}
-          <circle cx="62" cy="-58" r="4" fill="#D0FF14">
-            <animate
-              attributeName="opacity"
-              values="1;0.3;1"
-              dur="1.8s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        </g>
-
-        {/* === ORACLE LINK: Household → Protocol === */}
-        <path
-          d="M 165 400 Q 280 380, 380 305"
-          fill="none"
-          stroke="#0F3B47"
-          strokeWidth="2"
-          markerEnd="url(#arrow-teal)"
-        />
-        <g transform="translate(255, 365)">
-          <rect
-            x="-58"
-            y="-12"
-            width="116"
-            height="24"
-            rx="12"
-            fill="#FFFFFF"
-            stroke="#0F3B47"
-            strokeWidth="1.2"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fontWeight: 600,
-              fill: "#0F3B47",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            Oracle on inverter
-          </text>
-        </g>
-
-        {/* === YIELD: Protocol → Household === */}
-        <path
-          d="M 380 320 Q 280 425, 165 425"
-          fill="none"
-          stroke="#0F3B47"
-          strokeWidth="2"
-          strokeDasharray="0"
-          markerEnd="url(#arrow-teal)"
-        />
-        <g transform="translate(265, 432)">
-          <rect
-            x="-46"
-            y="-12"
-            width="92"
-            height="24"
-            rx="12"
-            fill="#0F3B47"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fontWeight: 600,
-              fill: "#D0FF14",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            yield · EURC
-          </text>
-        </g>
-
-        {/* === CERTIFICATE: Protocol → Company === */}
-        <path
-          d="M 540 305 Q 660 380, 760 400"
-          fill="none"
-          stroke="#1F2E5C"
-          strokeWidth="2"
-          markerEnd="url(#arrow-navy)"
-        />
-        <g transform="translate(670, 365)">
-          <rect
-            x="-46"
-            y="-12"
-            width="92"
-            height="24"
-            rx="12"
-            fill="#FFFFFF"
-            stroke="#1F2E5C"
-            strokeWidth="1.2"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fontWeight: 600,
-              fill: "#1F2E5C",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            certificate
-          </text>
-        </g>
-
-        {/* === PAY: Company → Protocol === */}
-        <path
-          d="M 760 425 Q 660 425, 540 320"
-          fill="none"
-          stroke="#1F2E5C"
-          strokeWidth="2"
-          markerEnd="url(#arrow-navy)"
-        />
-        <g transform="translate(660, 432)">
-          <rect
-            x="-46"
-            y="-12"
-            width="92"
-            height="24"
-            rx="12"
-            fill="#1F2E5C"
-          />
-          <text
-            x="0"
-            y="4"
-            textAnchor="middle"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "9px",
-              fontWeight: 600,
-              fill: "#D0FF14",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-            }}
-          >
-            pay · EURC
-          </text>
-        </g>
-
-        {/* === VERIFICATION: Grid → Protocol === */}
-        <path
-          d="M 460 130 L 460 175"
-          fill="none"
-          stroke="#7D9BA4"
-          strokeWidth="1.5"
-          strokeDasharray="3 3"
-          markerEnd="url(#arrow-grey)"
-        />
-        <text
-          x="468"
-          y="158"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: "9px",
-            fill: "#7D9BA4",
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
-          verification
-        </text>
-      </svg>
-
-      {/* === AGGREGATION CALLOUT (the 10-house batch insight from your schema) === */}
-      <div className="grid md:grid-cols-3 gap-3 mt-8 pt-8" style={{ borderTop: "1px solid var(--border)" }}>
+      {/* === RIGHT 1/3: step callouts stacked vertically === */}
+      <div className="lg:col-span-1 flex flex-col gap-4">
         <ArchCallout
           step="01"
           title="Hourly pulses"
