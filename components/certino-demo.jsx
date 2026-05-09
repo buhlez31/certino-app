@@ -2293,20 +2293,56 @@ function LandingView({ theme, setTheme, onSelectProducer, onSelectBuyer }) {
       <ThemeStyles />
 
       <div className="max-w-6xl mx-auto px-6 py-10 md:py-16 min-h-screen flex flex-col">
-        {/* Top brand bar with theme toggle */}
-        <div className="flex items-center justify-between mb-12 md:mb-16">
-          <div className="flex items-center gap-3">
-            <HilierMark className="w-9 h-10" />
+        {/* Pill header — mirrors landing-page Header */}
+        <div
+          className="flex items-center justify-between gap-4 pl-5 pr-2 py-2 rounded-full mb-12 md:mb-16"
+          style={{
+            background: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(12px)",
+            boxShadow:
+              "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {/* Logo -> back to landing */}
+          <a href="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <HilierMark className="w-7 h-8" />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-extrabold tracking-tight">Certino</span>
               <span
-                className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+                className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
                 style={{ color: "var(--text-tertiary)" }}
               >
                 by Treetino
               </span>
             </div>
-          </div>
+          </a>
+
+          {/* Nav -> jumps to landing sections */}
+          <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
+            <a
+              href="/#how-it-works"
+              className="transition-colors hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              How it works
+            </a>
+            <a
+              href="/#problem"
+              className="transition-colors hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              The problem
+            </a>
+            <a
+              href="/#standards"
+              className="transition-colors hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Standards
+            </a>
+          </nav>
+
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
 
