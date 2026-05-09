@@ -882,7 +882,7 @@ function Architecture() {
       <div className="max-w-7xl mx-auto px-6">
         <SectionKicker label="Protocol architecture" tone="accent" />
 
-        <div className="md:max-w-3xl mt-6 mb-12 md:mb-14">
+        <div className="mt-6 mb-12 md:mb-14">
           <h2
             className="display text-4xl md:text-5xl leading-[1.05]"
             style={{ letterSpacing: "-0.02em" }}
@@ -893,7 +893,7 @@ function Architecture() {
             </span>
           </h2>
           <p
-            className="text-base md:text-lg leading-relaxed mt-5 max-w-2xl"
+            className="text-base md:text-lg leading-relaxed mt-5"
             style={{ color: "var(--text-secondary)" }}
           >
             Three real-world parties, one protocol mediating the value flow.
