@@ -327,23 +327,32 @@ export default function CertinoDemo() {
 
 function Nav({ walletConnected, setWalletConnected, onBack, theme, setTheme }) {
   return (
-    <nav className="flex items-center justify-between mb-8">
+    <nav
+      className="flex items-center justify-between gap-4 pl-3 pr-2 py-2 rounded-full mb-8"
+      style={{
+        background: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(12px)",
+        boxShadow:
+          "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+        border: "1px solid var(--border)",
+      }}
+    >
       <div className="flex items-center gap-3">
         {onBack && (
           <button
             onClick={onBack}
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors -ml-1"
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
             style={{ color: "var(--text-secondary)" }}
             title="Back to landing"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
         )}
-        <HilierMark className="w-9 h-10" />
+        <HilierMark className="w-7 h-8" />
         <div className="flex flex-col leading-none">
           <span className="text-xl font-extrabold tracking-tight">Certino</span>
           <span
-            className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+            className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
             style={{ color: "var(--accent)" }}
           >
             Producer
@@ -2532,21 +2541,30 @@ function BuyerView({ theme, setTheme, onBack }) {
 
       <div className="max-w-6xl mx-auto px-6 py-6 md:py-10">
         {/* ============ NAV ============ */}
-        <nav className="flex items-center justify-between mb-8">
+        <nav
+          className="flex items-center justify-between gap-4 pl-3 pr-2 py-2 rounded-full mb-8"
+          style={{
+            background: "rgba(255, 255, 255, 0.9)",
+            backdropFilter: "blur(12px)",
+            boxShadow:
+              "0 1px 2px rgba(15, 33, 42, 0.04), 0 12px 32px -8px rgba(15, 33, 42, 0.08)",
+            border: "1px solid var(--border)",
+          }}
+        >
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
               style={{ color: "var(--text-secondary)" }}
               aria-label="Back to landing"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
-            <HilierMark className="w-9 h-10" />
+            <HilierMark className="w-7 h-8" />
             <div className="flex flex-col leading-none">
               <span className="text-xl font-extrabold tracking-tight">Certino</span>
               <span
-                className="text-[10px] font-semibold mt-1 tracking-widest uppercase"
+                className="text-[9px] font-semibold mt-0.5 tracking-widest uppercase"
                 style={{ color: "var(--accent)" }}
               >
                 Buyer
