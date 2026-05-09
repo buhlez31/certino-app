@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import {
   AreaChart,
@@ -195,7 +196,7 @@ const FUEL = {
 // MAIN
 // ============================================================
 
-export default function App() {
+export default function CertinoDemo() {
   const [theme, setTheme] = useState("light"); // "light" | "dark"
   const [route, setRoute] = useState("landing"); // "landing" | "dashboard"
   const [walletConnected, setWalletConnected] = useState(false); // start disconnected when entering from landing
