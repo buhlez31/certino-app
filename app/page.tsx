@@ -1,5 +1,5 @@
-import CertinoDemo from "@/components/certino-demo";
+import CertinoLanding from "@/components/certino-landing";
 
 export default function Home() {
-  return <CertinoDemo />;
+  return <CertinoLanding />;
 }
