@@ -37,6 +37,12 @@ yarn-error.log*
 # vercel
 .vercel
 
+# claude code runtime
+/.claude/
+
+# local notes (not for the repo)
+HANDOFF.md
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { cancelCertificate } from "@/lib/cancel.client";
 import {
   AreaChart,
   Area,
@@ -199,12 +200,88 @@ const FUEL = {
 export default function CertinoDemo() {
   const [theme, setTheme] = useState("light"); // "light" | "dark"
   const [route, setRoute] = useState("landing"); // "landing" | "dashboard"
-  const [walletConnected, setWalletConnected] = useState(false); // start disconnected when entering from landing
+  const [walletAddress, setWalletAddress] = useState(null); // 0x… when MetaMask connected
+  const [walletError, setWalletError] = useState(null);
   const [devices, setDevices] = useState([INITIAL_DEVICES[0]]); // pre-seed with one live device (Vinohrady Rooftop)
   const [selectedId, setSelectedId] = useState(INITIAL_DEVICES[0].id);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [deregisterDevice, setDeregisterDevice] = useState(null);
+  const [cancelDevice, setCancelDevice] = useState(null);
   const selected = devices.find((d) => d.id === selectedId);
+
+  // After a successful cancel, refresh the device's remaining/status from the chain
+  // and merge it back into the local devices array so the UI reflects it.
+  const handleCancelComplete = async (deviceId, tokenId) => {
+    try {
+      const res = await fetch(`/api/certificates/${tokenId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      setDevices((prev) =>
+        prev.map((d) =>
+          d.id === deviceId
+            ? {
+                ...d,
+                remainingWh: data.remaining,
+                cancelledWh: data.bundle?.cancelledQuantity,
+                certStatus: data.statusLabel,
+              }
+            : d,
+        ),
+      );
+    } catch {
+      /* non-blocking */
+    }
+  };
+  const walletConnected = !!walletAddress;
+
+  const connectWallet = async () => {
+    setWalletError(null);
+    try {
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("MetaMask not detected. Install it and reload.");
+      }
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+      const addr = accounts?.[0];
+      if (!addr) throw new Error("No account returned by MetaMask.");
+      setWalletAddress(addr);
+    } catch (err) {
+      setWalletError(err?.message || String(err));
+    }
+  };
+
+  const disconnectWallet = () => setWalletAddress(null);
+
+  // Listen for account / chain changes in MetaMask and reflect them in UI
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.ethereum?.on) return;
+    const handleAccountsChanged = (accounts) => {
+      setWalletAddress(accounts?.[0] || null);
+    };
+    const handleChainChanged = () => {
+      // simplest reaction: just keep the address; cancel flow checks chain itself
+    };
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+    window.ethereum.on("chainChanged", handleChainChanged);
+    return () => {
+      window.ethereum.removeListener?.("accountsChanged", handleAccountsChanged);
+      window.ethereum.removeListener?.("chainChanged", handleChainChanged);
+    };
+  }, []);
+
+  // Hide locally-deregistered devices (persisted in localStorage per wallet).
+  // Runs whenever the connected wallet changes — different wallets see different sets.
+  useEffect(() => {
+    if (!walletAddress || typeof window === "undefined") return;
+    try {
+      const key = `certino:deregistered:${walletAddress.toLowerCase()}`;
+      const stopped = JSON.parse(localStorage.getItem(key) || "[]");
+      if (Array.isArray(stopped) && stopped.length > 0) {
+        setDevices((prev) => prev.filter((d) => !stopped.includes(d.id)));
+      }
+    } catch {
+      /* localStorage unavailable */
+    }
+  }, [walletAddress]);
 
   // Called from RegisterDeviceModal success — appends new pending device
   const handleRegister = (newDevice) => {
@@ -213,11 +290,24 @@ export default function CertinoDemo() {
     setRegisterOpen(false);
   };
 
-  // Called from DeregisterDeviceModal — removes device from state (NFT burned on-chain)
+  // Called from DeregisterDeviceModal — hides the device from this wallet's
+  // local registry and persists the choice. No on-chain action: the contract
+  // has no per-device state, and existing certificates remain valid for buyers.
   const handleDeregister = (deviceId) => {
     setDevices((prev) => prev.filter((d) => d.id !== deviceId));
     if (selectedId === deviceId) setSelectedId(null);
     setDeregisterDevice(null);
+    if (walletAddress && typeof window !== "undefined") {
+      try {
+        const key = `certino:deregistered:${walletAddress.toLowerCase()}`;
+        const prev = JSON.parse(localStorage.getItem(key) || "[]");
+        if (!prev.includes(deviceId)) {
+          localStorage.setItem(key, JSON.stringify([...prev, deviceId]));
+        }
+      } catch {
+        /* localStorage unavailable */
+      }
+    }
   };
 
   // View state branching
@@ -260,8 +350,9 @@ export default function CertinoDemo() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* ============ NAV ============ */}
         <Nav
-          walletConnected={walletConnected}
-          setWalletConnected={setWalletConnected}
+          walletAddress={walletAddress}
+          onConnect={connectWallet}
+          onDisconnect={disconnectWallet}
           onBack={() => setRoute("landing")}
           theme={theme}
           setTheme={setTheme}
@@ -269,7 +360,7 @@ export default function CertinoDemo() {
 
         {/* ============ MAIN CONTENT — three states ============ */}
         {view === "no-wallet" && (
-          <EmptyWalletState onConnect={() => setWalletConnected(true)} />
+          <EmptyWalletState onConnect={connectWallet} error={walletError} />
         )}
 
         {view === "no-devices" && (
@@ -294,6 +385,7 @@ export default function CertinoDemo() {
                 <DeviceDetail
                   device={selected}
                   onDeregister={() => setDeregisterDevice(selected)}
+                  onCancel={() => setCancelDevice(selected)}
                 />
               )}
             </div>
@@ -304,6 +396,7 @@ export default function CertinoDemo() {
       {/* ============ REGISTER DEVICE MODAL ============ */}
       {registerOpen && (
         <RegisterDeviceModal
+          walletAddress={walletAddress}
           onClose={() => setRegisterOpen(false)}
           onRegister={handleRegister}
         />
@@ -317,6 +410,19 @@ export default function CertinoDemo() {
           onConfirm={() => handleDeregister(deregisterDevice.id)}
         />
       )}
+
+      {/* ============ CANCEL CERTIFICATE MODAL ============ */}
+      {cancelDevice && (
+        <CancelCertificateModal
+          device={cancelDevice}
+          walletAddress={walletAddress}
+          onClose={() => setCancelDevice(null)}
+          onComplete={(tokenId) => {
+            handleCancelComplete(cancelDevice.id, tokenId);
+            setCancelDevice(null);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -325,7 +431,13 @@ export default function CertinoDemo() {
 // NAV
 // ============================================================
 
-function Nav({ walletConnected, setWalletConnected, onBack, theme, setTheme }) {
+function Nav({ walletAddress, onConnect, onDisconnect, onBack, theme, setTheme }) {
+  const walletConnected = !!walletAddress;
+  const short = walletAddress ? `${walletAddress.slice(0, 6)}…${walletAddress.slice(-4)}` : "";
+  const handleClick = () => {
+    if (walletConnected) onDisconnect?.();
+    else onConnect?.();
+  };
   return (
     <nav
       className="flex items-center justify-between gap-4 pl-3 pr-2 py-2 rounded-full mb-8"
@@ -363,7 +475,8 @@ function Nav({ walletConnected, setWalletConnected, onBack, theme, setTheme }) {
       <div className="flex items-center gap-2">
         <ThemeToggle theme={theme} setTheme={setTheme} />
         <button
-          onClick={() => setWalletConnected(!walletConnected)}
+          onClick={handleClick}
+          title={walletConnected ? `${walletAddress} · click to disconnect` : "Connect MetaMask"}
           className="flex items-center gap-2.5 px-4 py-2 rounded-full text-sm font-semibold border transition-all"
           style={
             walletConnected
@@ -377,7 +490,7 @@ function Nav({ walletConnected, setWalletConnected, onBack, theme, setTheme }) {
                 className="w-6 h-6 rounded-full"
                 style={{ background: "linear-gradient(135deg, var(--accent), #7D9BA4, #0F3B47)" }}
               />
-              <span className="mono text-xs">7xKp…j2nQ</span>
+              <span className="mono text-xs">{short}</span>
             </>
           ) : (
             <>
@@ -531,10 +644,10 @@ function DeviceCard({ device, selected, onClick }) {
 // DEVICE DETAIL
 // ============================================================
 
-function DeviceDetail({ device, onDeregister }) {
+function DeviceDetail({ device, onDeregister, onCancel }) {
   // Branch: pending devices show approval status, not production data
   if (device.status === "pending") {
-    return <PendingDeviceDetail device={device} onDeregister={onDeregister} />;
+    return <PendingDeviceDetail device={device} onDeregister={onDeregister} onCancel={onCancel} />;
   }
 
   const fuel = FUEL[device.icon];
@@ -603,6 +716,18 @@ function DeviceDetail({ device, onDeregister }) {
                 <div className="flex items-center gap-2 text-xs font-bold text-[var(--text-tertiary)] tracking-widest uppercase mb-1.5">
                   <Hash className="w-3 h-3" />
                   <span className="mono">{device.id}</span>
+                  {device.txHash && (
+                    <a
+                      href={`https://amoy.polygonscan.com/tx/${device.txHash}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors normal-case tracking-normal"
+                      title={device.txHash}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      View on Etherscan
+                    </a>
+                  )}
                 </div>
                 <h1 className="display text-3xl md:text-4xl font-medium leading-tight">
                   {device.name}
@@ -931,8 +1056,50 @@ function DeviceDetail({ device, onDeregister }) {
         </div>
       </Card>
 
+      {/* Cancel certificate — retires kWh on-chain (only when we have a real tokenId) */}
+      {device.tokenId && (
+        <CancelZone device={device} onCancel={onCancel} />
+      )}
+
       {/* Deregister — burns the device NFT, stops issuance */}
       <DangerZone onDeregister={onDeregister} />
+    </div>
+  );
+}
+
+// ============================================================
+// CANCEL ZONE — opens cancel modal for real on-chain certificates
+// ============================================================
+
+function CancelZone({ device, onCancel }) {
+  const remaining = device.remainingWh ?? "4200"; // bundleQuantity from mint
+  const isCancelled = device.certStatus === "Cancelled";
+  return (
+    <div
+      className="flex items-center justify-between p-4 rounded-2xl border border-dashed border-[var(--border-strong)] bg-[var(--bg-card)]/40"
+    >
+      <div className="flex items-center gap-2.5">
+        <span className="w-8 h-8 rounded-full bg-[var(--bg-card-hover)] flex items-center justify-center flex-shrink-0">
+          <ShieldCheck className="w-4 h-4 text-[var(--text-secondary)]" />
+        </span>
+        <div>
+          <div className="text-sm font-bold text-[var(--text-secondary)]">
+            {isCancelled ? "Certificate fully cancelled" : "Cancel certificate"}
+          </div>
+          <div className="text-[11px] text-[var(--text-secondary)]">
+            {isCancelled
+              ? "All energy retired on-chain"
+              : `Retire kWh on-chain · ${remaining} Wh remaining`}
+          </div>
+        </div>
+      </div>
+      <button
+        onClick={onCancel}
+        disabled={isCancelled}
+        className="px-4 py-1.5 rounded-full text-xs font-bold tracking-wide text-[var(--accent)] hover:bg-[var(--bg-card-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Cancel
+      </button>
     </div>
   );
 }
@@ -973,7 +1140,7 @@ function DangerZone({ onDeregister }) {
 // PENDING DEVICE DETAIL — shown when registration is awaiting approval
 // ============================================================
 
-function PendingDeviceDetail({ device, onDeregister }) {
+function PendingDeviceDetail({ device, onDeregister, onCancel }) {
   const fuel = FUEL[device.icon];
   const Icon = fuel.icon;
 
@@ -1060,10 +1227,22 @@ function PendingDeviceDetail({ device, onDeregister }) {
                   Estimated approval: {device.estimatedApproval}
                 </span>
               </div>
-              <Button variant="ghost">
-                Registration tx
-                <ExternalLink className="w-3 h-3" />
-              </Button>
+              {device.txHash ? (
+                <a
+                  href={`https://amoy.polygonscan.com/tx/${device.txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline"
+                >
+                  Registration tx
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              ) : (
+                <Button variant="ghost">
+                  Registration tx
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -1110,7 +1289,7 @@ function PendingDeviceDetail({ device, onDeregister }) {
           <div>
             <h3 className="display text-2xl font-medium mb-2 leading-tight">
               Once approved, this device will{" "}
-              <span className="italic" style={{ color: "var(--accent)" }} style={{ paddingRight: "0.06em" }}>auto-issue</span> hourly
+              <span className="italic" style={{ color: "var(--accent)", paddingRight: "0.06em" }}>auto-issue</span> hourly
             </h3>
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">
               The protocol will start receiving meter readings and emitting an
@@ -1121,6 +1300,11 @@ function PendingDeviceDetail({ device, onDeregister }) {
           </div>
         </div>
       </Card>
+
+      {/* Cancel certificate — only when there's a real tokenId */}
+      {device.tokenId && (
+        <CancelZone device={device} onCancel={onCancel} />
+      )}
 
       {/* Cancel pending registration — burns NFT before approval completes */}
       <DangerZone onDeregister={onDeregister} />
@@ -1369,24 +1553,91 @@ const VRM_INSTALLATIONS = [
   { id: "9f8a1c34", name: "MultiPlus 48/5000", capacity: 5.0, type: "battery", lat: 50.0876, lon: 14.4213, location: "Praha 5, CZ", lastReading: "Idle · 84% SoC" },
 ];
 
-function RegisterDeviceModal({ onClose, onRegister }) {
+function RegisterDeviceModal({ walletAddress, onClose, onRegister }) {
   const [step, setStep] = useState("device-type");
   const [deviceType, setDeviceType] = useState(null);
   const [installation, setInstallation] = useState(null);
 
-  // Mock blockchain artifacts
-  const txHash = "0x4f2a8b91c3f88d17a2c1e92b6e4f9a8d5b3c7f1e";
-  const tokenId = "#" + (1247 + Math.floor(Math.random() * 99));
+  // Real blockchain artifacts populated by /api/mint
+  const [txHash, setTxHash] = useState(null);
+  const [tokenId, setTokenId] = useState(null);
+  const [owner, setOwner] = useState(null);
+  const [mintError, setMintError] = useState(null);
 
   const handleAuthorize = () => setStep("select-installation");
   const handleSelectInstallation = (inst) => { setInstallation(inst); setStep("confirm"); };
-  const handleSign = () => {
+
+  const handleSign = async () => {
+    setMintError(null);
+    setTxHash(null);
+    setTokenId(null);
     setStep("signing");
-    setTimeout(() => setStep("minting"), 1500);
-    setTimeout(() => setStep("success"), 4000);
+    try {
+      if (!walletAddress) {
+        throw new Error("Wallet not connected. Close this dialog and connect your wallet first.");
+      }
+      if (typeof window === "undefined" || !window.ethereum) {
+        throw new Error("MetaMask not detected.");
+      }
+      const producer = walletAddress;
+      setOwner(producer);
+
+      const kWh = parseFloat(installation?.lastReading);
+      if (!Number.isFinite(kWh) || kWh <= 0) {
+        throw new Error("This installation has no valid kWh reading to mint.");
+      }
+      const startDate = new Date();
+      startDate.setUTCMinutes(0, 0, 0);
+      const productionStart = startDate.toISOString();
+      const energySource = DEVICE_TYPES.find((d) => d.id === deviceType)?.label || "Solar";
+
+      const message = [
+        "Certino — authorize certificate issuance",
+        "",
+        `Producer: ${producer}`,
+        `Device: ${installation.id} (${installation.name})`,
+        `Energy: ${kWh} kWh ${energySource}`,
+        `Production hour: ${productionStart}`,
+      ].join("\n");
+
+      try {
+        await window.ethereum.request({
+          method: "personal_sign",
+          params: [message, producer],
+        });
+      } catch (sigErr) {
+        if (sigErr?.code === 4001) throw new Error("You rejected the signature in MetaMask.");
+        throw new Error(sigErr?.message || "Signature failed.");
+      }
+
+      setStep("minting");
+
+      const res = await fetch("/api/mint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          producer,
+          kWh,
+          productionStart,
+          deviceLabel: installation.id,
+          energySource,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Mint failed (HTTP ${res.status})`);
+
+      setTxHash(data.txHash);
+      setTokenId(data.tokenId);
+      setStep("success");
+    } catch (err) {
+      setMintError(err?.message || String(err));
+      setStep("error");
+    }
   };
 
-  // Build the new device object that will appear in the registry as pending
+  // Build the new device object — newly-minted certs land in "pending" state
+  // so the operator can review them before flipping live (mock approval queue).
+  // The on-chain mint already succeeded, but protocol approval is a separate step.
   const handleViewInRegistry = () => {
     if (!installation || !deviceType) {
       onClose();
@@ -1394,7 +1645,7 @@ function RegisterDeviceModal({ onClose, onRegister }) {
     }
     const t = DEVICE_TYPES.find((d) => d.id === deviceType);
     const newDevice = {
-      id: tokenId,
+      id: tokenId ? `#${tokenId}` : installation.id,
       name: installation.name,
       type: t?.label === "HILIER LDES" ? "LDES + CHP" : t?.label || "Device",
       icon: deviceType === "battery" ? "hilier" : deviceType, // battery uses hilier visuals for now
@@ -1415,6 +1666,9 @@ function RegisterDeviceModal({ onClose, onRegister }) {
         { id: "dual", label: "Dual-issuance check", sub: "Querying neighbouring registries (AIB, REGO)…", status: "checking" },
         { id: "meter", label: "Metering data validation", sub: "Awaiting 24h baseline", status: "queued" },
       ],
+      txHash,
+      tokenId,
+      owner,
     };
     onRegister?.(newDevice);
   };
@@ -1475,7 +1729,15 @@ function RegisterDeviceModal({ onClose, onRegister }) {
             installation={installation}
             tokenId={tokenId}
             txHash={txHash}
+            owner={owner}
             onClose={handleViewInRegistry}
+          />
+        )}
+        {step === "error" && (
+          <RegErrorStep
+            error={mintError}
+            onRetry={() => setStep("confirm")}
+            onClose={onClose}
           />
         )}
       </div>
@@ -1902,6 +2164,11 @@ function RegSigningStep({ onClose }) {
 // ============================================================
 
 function RegMintingStep({ txHash, onClose }) {
+  const [elapsed, setElapsed] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setElapsed((e) => e + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
   return (
     <div className="p-7 py-12 text-center">
       <div
@@ -1911,14 +2178,14 @@ function RegMintingStep({ txHash, onClose }) {
         <Loader2 className="w-7 h-7 text-[var(--accent)] animate-spin" />
       </div>
       <h2 className="display text-2xl font-medium mb-2">
-        Minting device NFT
+        Minting on Polygon Amoy
       </h2>
       <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto mb-4">
-        Your device identity is being written to your wallet on-chain.
+        Waiting for block confirmation. Polygon blocks land every ~2 seconds, so this usually takes under 10s.
       </p>
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-card-hover)] mono text-[11px] text-[var(--text-secondary)]">
-        <Hash className="w-3 h-3" />
-        {txHash.slice(0, 10)}…{txHash.slice(-6)}
+        <Loader2 className="w-3 h-3 animate-spin" />
+        {elapsed}s elapsed
       </div>
     </div>
   );
@@ -1928,9 +2195,13 @@ function RegMintingStep({ txHash, onClose }) {
 // STEP 7: SUCCESS — NFT minted, now entering pending approval
 // ============================================================
 
-function RegSuccessStep({ deviceType, installation, tokenId, txHash, onClose }) {
+function RegSuccessStep({ deviceType, installation, tokenId, txHash, owner, onClose }) {
   const t = DEVICE_TYPES.find((d) => d.id === deviceType);
   const Icon = t.icon;
+  const ownerShort = owner ? `${owner.slice(0, 6)}…${owner.slice(-4)}` : "—";
+  const txShort = txHash ? `${txHash.slice(0, 10)}…${txHash.slice(-6)}` : "—";
+  const tokenLabel = tokenId ? `#${tokenId}` : "—";
+  const etherscanUrl = txHash ? `https://amoy.polygonscan.com/tx/${txHash}` : null;
 
   return (
     <div className="p-7">
@@ -1986,11 +2257,21 @@ function RegSuccessStep({ deviceType, installation, tokenId, txHash, onClose }) 
         </div>
 
         <div className="space-y-1.5 pt-4 border-t" style={{ borderColor: `${t.color}33` }}>
-          <KVRow label="Token ID" value={tokenId} mono />
-          <KVRow label="Owner" value="0x7xKp…j2nQ" mono />
-          <KVRow label="Tx hash" value={`${txHash.slice(0, 10)}…${txHash.slice(-6)}`} mono />
-          <KVRow label="Standard" value="ERC-721 on Base" />
+          <KVRow label="Token ID" value={tokenLabel} mono />
+          <KVRow label="Owner" value={ownerShort} mono />
+          <KVRow label="Tx hash" value={txShort} mono />
+          <KVRow label="Standard" value="ERC-1155 on Polygon Amoy" />
         </div>
+        {etherscanUrl && (
+          <a
+            href={etherscanUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 mt-4 text-[11px] font-semibold text-[var(--accent)] hover:underline"
+          >
+            View on Etherscan <ArrowRight className="w-3 h-3" />
+          </a>
+        )}
       </div>
 
       {/* Pending approval notice */}
@@ -2009,13 +2290,38 @@ function RegSuccessStep({ deviceType, installation, tokenId, txHash, onClose }) 
   );
 }
 
+// ============================================================
+// ERROR STEP — shown if wallet connect or /api/mint fails
+// ============================================================
+
+function RegErrorStep({ error, onRetry, onClose }) {
+  return (
+    <div className="p-7 py-10 text-center">
+      <div
+        className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+        style={{ background: "#FEE2E2" }}
+      >
+        <X className="w-7 h-7 text-red-600" strokeWidth={2.5} />
+      </div>
+      <h2 className="display text-2xl font-medium mb-2">Mint failed</h2>
+      <p className="text-sm text-[var(--text-secondary)] max-w-sm mx-auto mb-5 break-words">
+        {error || "Something went wrong submitting the transaction."}
+      </p>
+      <div className="flex gap-2">
+        <Button variant="ghost" className="flex-1" onClick={onClose}>Close</Button>
+        <Button variant="dark" className="flex-1" onClick={onRetry}>Try again</Button>
+      </div>
+    </div>
+  );
+}
+
 
 // ============================================================
 // EMPTY STATES — shown when no wallet OR no devices
 // Hero with primary CTA centered. Big, friendly, encouraging.
 // ============================================================
 
-function EmptyWalletState({ onConnect }) {
+function EmptyWalletState({ onConnect, error }) {
   return (
     <div className="flex items-center justify-center min-h-[60vh] py-12">
       <div className="text-center max-w-2xl mx-auto">
@@ -2056,11 +2362,15 @@ function EmptyWalletState({ onConnect }) {
               Connect wallet
             </span>
             <span className="block text-xs text-[var(--text-secondary)] mt-0.5">
-              Email · Apple ID · Google <span className="opacity-70">(soon)</span>
+              MetaMask · Polygon Amoy testnet
             </span>
           </span>
           <ArrowRight className="w-5 h-5 text-[var(--text-tertiary)] group-hover:text-[var(--accent)] group-hover:translate-x-1 transition-all flex-shrink-0" />
         </button>
+
+        {error && (
+          <p className="mt-5 text-sm text-red-600 max-w-md mx-auto">{error}</p>
+        )}
       </div>
     </div>
   );
@@ -2126,7 +2436,6 @@ function DeregisterDeviceModal({ device, onClose, onConfirm }) {
   const [step, setStep] = useState("confirm");
   const fuel = FUEL[device.icon];
   const Icon = fuel.icon;
-  const txHash = "0xb1a44e92c8d717f3c3e9dc8d5b3c7f1e4f2a8b91";
 
   const handleBurn = () => {
     setStep("signing");
@@ -2165,8 +2474,8 @@ function DeregisterDeviceModal({ device, onClose, onConfirm }) {
               Deregister <span className="italic text-red-600">device</span>?
             </h2>
             <p className="text-sm text-[var(--text-secondary)] mb-5">
-              This burns the device NFT and removes it from your registry. Cancellation
-              records of past GCs stay on-chain.
+              Removes the device from your registry. Past certificates stay in your wallet
+              and remain valid for buyers.
             </p>
 
             {/* Device preview — same source coloring */}
@@ -2190,9 +2499,9 @@ function DeregisterDeviceModal({ device, onClose, onConfirm }) {
 
             {/* Consequences list */}
             <div className="rounded-2xl bg-red-50 border border-red-100 p-4 mb-5 space-y-2">
-              <ConseqRow label="NFT will be burned" />
-              <ConseqRow label="GC issuance stops immediately" />
-              <ConseqRow label="Past certificates remain valid for buyers" />
+              <ConseqRow label="Device removed from your registry" />
+              <ConseqRow label="GC issuance stops for this device" />
+              <ConseqRow label="Past certificates stay in your wallet and remain valid for buyers" />
               <ConseqRow label="You can re-register the same device later" />
             </div>
 
@@ -2239,15 +2548,11 @@ function DeregisterDeviceModal({ device, onClose, onConfirm }) {
               <Flame className="w-7 h-7 text-red-600 animate-pulse" />
             </div>
             <h2 className="display text-2xl font-medium mb-2">
-              Burning <span className="italic text-red-600">NFT</span>
+              Removing <span className="italic text-red-600">device</span>
             </h2>
-            <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto mb-4">
-              Your device NFT is being burned on-chain.
+            <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto">
+              Removing from your registry…
             </p>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-card-hover)] mono text-[11px] text-[var(--text-secondary)]">
-              <Hash className="w-3 h-3" />
-              {txHash.slice(0, 10)}…{txHash.slice(-6)}
-            </div>
           </div>
         )}
 
@@ -2262,7 +2567,7 @@ function DeregisterDeviceModal({ device, onClose, onConfirm }) {
               Device <span className="italic text-emerald-600">deregistered</span>
             </h2>
             <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto">
-              NFT burned. The device no longer appears in your registry.
+              Removed from your registry. Past certificates stay in your wallet.
             </p>
           </div>
         )}
@@ -2727,7 +3032,7 @@ function BuyerView({ theme, setTheme, onBack }) {
                     Live marketplace · small producers across CZ
                   </div>
                   <h3 className="display text-2xl font-medium">
-                    Carbon credits direct from <span className="italic" style={{ color: "var(--accent)" }} style={{ paddingRight: "0.06em" }}>small</span> verified producers
+                    Carbon credits direct from <span className="italic" style={{ color: "var(--accent)", paddingRight: "0.06em" }}>small</span> verified producers
                   </h3>
                 </div>
 
@@ -3996,5 +4301,196 @@ function ThemeToggle({ theme, setTheme }) {
         <Moon className="w-4 h-4" strokeWidth={2} />
       )}
     </button>
+  );
+}
+
+// ============================================================
+// CANCEL CERTIFICATE MODAL — frontend signs and broadcasts directly
+// ============================================================
+
+function CancelCertificateModal({ device, walletAddress, onClose, onComplete }) {
+  const tokenId = device?.tokenId;
+  const remainingWh = parseInt(device?.remainingWh ?? "4200", 10);
+  const [quantity, setQuantity] = useState(remainingWh.toString());
+  const [useSelfBeneficiary, setUseSelfBeneficiary] = useState(true);
+  const [beneficiary, setBeneficiary] = useState(walletAddress || "");
+  const [phase, setPhase] = useState("idle"); // idle | confirming | broadcasting | success | error
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [result, setResult] = useState(null); // { txHash, explorerUrl }
+
+  const qtyNum = parseInt(quantity || "0", 10);
+  const qtyValid = Number.isFinite(qtyNum) && qtyNum > 0 && qtyNum <= remainingWh;
+  const finalBeneficiary = useSelfBeneficiary ? walletAddress : beneficiary.trim();
+  const beneficiaryValid = !!finalBeneficiary && /^0x[a-fA-F0-9]{40}$/.test(finalBeneficiary);
+  const canSubmit = qtyValid && beneficiaryValid && phase === "idle" && tokenId;
+
+  const handleConfirm = async () => {
+    if (!canSubmit) return;
+    setErrorMsg(null);
+    setPhase("confirming");
+    try {
+      const r = await cancelCertificate(tokenId, BigInt(qtyNum), finalBeneficiary);
+      setResult(r);
+      setPhase("success");
+    } catch (err) {
+      const code = err?.code;
+      const msg =
+        code === "ACTION_REJECTED" || code === 4001
+          ? "You rejected the transaction in MetaMask."
+          : err?.shortMessage || err?.message || "Cancel failed.";
+      setErrorMsg(msg);
+      setPhase("error");
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-6"
+      style={{ background: "rgba(15,23,42,0.4)", backdropFilter: "blur(8px)" }}
+      onClick={phase === "confirming" || phase === "broadcasting" ? undefined : onClose}
+    >
+      <div
+        className="rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto scale-in"
+        onClick={(e) => e.stopPropagation()}
+        style={{ background: "var(--bg-card)", color: "var(--text-primary)", boxShadow: "0 24px 80px -12px rgba(15,23,42,0.4)" }}
+      >
+        <div className="p-7">
+          <div className="flex items-center justify-between mb-5">
+            <div className="text-xs font-bold text-[var(--text-tertiary)] tracking-widest uppercase">
+              Cancel certificate
+            </div>
+            <button
+              onClick={onClose}
+              disabled={phase === "confirming" || phase === "broadcasting"}
+              className="w-8 h-8 rounded-full hover:bg-[var(--bg-card-hover)] flex items-center justify-center transition-colors disabled:opacity-30"
+            >
+              <X className="w-4 h-4 text-[var(--text-secondary)]" />
+            </button>
+          </div>
+
+          {phase === "idle" || phase === "error" ? (
+            <>
+              <h2 className="display text-2xl font-medium mb-1">
+                Retire <span className="italic" style={{ color: "var(--accent)" }}>{qtyValid ? `${(qtyNum / 1000).toFixed(2)} kWh` : "kWh"}</span>
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] mb-5">
+                Token {device.id} · {device.name} · {remainingWh} Wh remaining
+              </p>
+
+              <label className="block text-[11px] font-bold text-[var(--text-tertiary)] tracking-widest uppercase mb-1.5">
+                Quantity (Wh)
+              </label>
+              <div className="flex gap-2 mb-1">
+                <input
+                  type="number"
+                  min="1"
+                  max={remainingWh}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="flex-1 px-4 py-2.5 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] text-sm font-mono focus:outline-none focus:border-[var(--accent)]"
+                  placeholder="0"
+                />
+                <button
+                  type="button"
+                  onClick={() => setQuantity(remainingWh.toString())}
+                  className="px-3 py-2 rounded-2xl text-xs font-bold text-[var(--accent)] hover:bg-[var(--bg-card-hover)] transition-colors"
+                >
+                  Max
+                </button>
+              </div>
+              <div className="text-[11px] text-[var(--text-secondary)] mb-4">
+                {qtyValid ? `= ${(qtyNum / 1000).toFixed(3)} kWh` : `Must be 1–${remainingWh}`}
+              </div>
+
+              <label className="block text-[11px] font-bold text-[var(--text-tertiary)] tracking-widest uppercase mb-1.5">
+                Beneficiary
+              </label>
+              <input
+                type="text"
+                value={useSelfBeneficiary ? walletAddress || "" : beneficiary}
+                onChange={(e) => setBeneficiary(e.target.value)}
+                disabled={useSelfBeneficiary}
+                placeholder="0x…"
+                className="w-full px-4 py-2.5 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] text-sm font-mono focus:outline-none focus:border-[var(--accent)] disabled:opacity-60"
+              />
+              <label className="flex items-center gap-2 mt-2 mb-5 text-xs text-[var(--text-secondary)] cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useSelfBeneficiary}
+                  onChange={(e) => {
+                    setUseSelfBeneficiary(e.target.checked);
+                    if (e.target.checked) setBeneficiary(walletAddress || "");
+                  }}
+                />
+                Use my wallet as beneficiary
+              </label>
+
+              {phase === "error" && errorMsg && (
+                <div className="p-3 mb-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 break-words">
+                  {errorMsg}
+                </div>
+              )}
+
+              <Button
+                variant="dark"
+                className="w-full !py-3 !text-base"
+                onClick={handleConfirm}
+                disabled={!canSubmit}
+              >
+                Cancel certificate
+              </Button>
+              <p className="text-[11px] text-[var(--text-tertiary)] text-center mt-3">
+                You'll sign and pay gas in MetaMask · Polygon Amoy
+              </p>
+            </>
+          ) : phase === "confirming" || phase === "broadcasting" ? (
+            <div className="py-8 text-center">
+              <div
+                className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+                style={{ background: "#FFEFE8" }}
+              >
+                <Loader2 className="w-7 h-7 text-[var(--accent)] animate-spin" />
+              </div>
+              <h2 className="display text-2xl font-medium mb-2">
+                {phase === "confirming" ? "Confirm in your wallet" : "Submitting to Polygon"}
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto">
+                {phase === "confirming"
+                  ? "Open MetaMask and approve the cancellation."
+                  : "Waiting for block confirmation. This usually takes under 10s on Polygon."}
+              </p>
+            </div>
+          ) : phase === "success" ? (
+            <div className="py-6 text-center">
+              <div
+                className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+                style={{ background: "#DCFCE7" }}
+              >
+                <Check className="w-7 h-7 text-emerald-600" strokeWidth={3} />
+              </div>
+              <h2 className="display text-2xl font-medium mb-2">
+                Cancelled
+              </h2>
+              <p className="text-sm text-[var(--text-secondary)] max-w-xs mx-auto mb-4">
+                {qtyNum} Wh retired permanently on Polygon Amoy.
+              </p>
+              {result?.explorerUrl && (
+                <a
+                  href={result.explorerUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 mb-5 text-xs font-semibold text-[var(--accent)] hover:underline"
+                >
+                  View on PolygonScan <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+              <Button variant="dark" className="w-full !py-3" onClick={() => onComplete?.(tokenId)}>
+                Done
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
 }
