@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "deviceLabel is required" }, { status: 400 });
   }
 
-  let contract;
+  let contract: ethers.Contract;
   try {
     ({ contract } = getIssuerContract());
   } catch (err) {
