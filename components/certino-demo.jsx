@@ -2310,34 +2310,7 @@ function LandingView({ theme, setTheme, onSelectProducer, onSelectBuyer }) {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
 
-        {/* Hero */}
-        <div className="text-center max-w-4xl mx-auto mb-12 md:mb-14">
-          <span
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-6"
-            style={{
-              background: "var(--bg-card)",
-              border: "1px solid var(--border)",
-              color: "var(--text-secondary)",
-            }}
-          >
-            <Sparkles className="w-3 h-3" style={{ color: "var(--accent)" }} />
-            EnergyTag GC Standard
-          </span>
-
-          <h1 className="display text-5xl md:text-7xl font-medium leading-[1.02] mb-5 tracking-tight">
-            Clean energy isn't scarce.<br />
-            <span className="italic" style={{ color: "var(--accent)" }}>
-              At the right hour
-            </span>, it is.
-          </h1>
-
-          <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed">
-            Premium carbon credits for small grid enhancers — your fair share
-            of a market built around utilities.
-          </p>
-        </div>
-
-        {/* Role chooser */}
+        {/* Role chooser — index for producer / buyer */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
           <RoleCard
             role="producer"

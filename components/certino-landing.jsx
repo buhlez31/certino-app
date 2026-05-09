@@ -136,28 +136,49 @@ function Header() {
 function Hero() {
   return (
     <section className="relative pt-32 md:pt-40 pb-16 md:pb-24">
-      <div className="max-w-6xl mx-auto px-6">
-        {/* Placeholder slot — header image + text to be added */}
-        <div
-          className="rounded-3xl flex items-center justify-center"
+      <div className="max-w-5xl mx-auto px-6 text-center">
+        <span
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
           style={{
-            minHeight: "420px",
-            border: "1px dashed var(--border-strong)",
-            background: "rgba(255, 255, 255, 0.3)",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border)",
+            color: "var(--text-secondary)",
           }}
         >
-          <span
-            className="mono"
-            style={{
-              fontSize: "11px",
-              color: "var(--text-tertiary)",
-              letterSpacing: "0.18em",
-              textTransform: "uppercase",
-            }}
-          >
-            Hero · image + text
+          <Sparkles className="w-3 h-3" style={{ color: "var(--accent)" }} />
+          EnergyTag GC Standard
+        </span>
+
+        <h1
+          className="display text-5xl md:text-7xl lg:text-8xl font-medium leading-[1.02] mb-6 tracking-tight"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          Clean energy isn't scarce.<br />
+          <span className="italic" style={{ color: "var(--accent)" }}>
+            At the right hour
           </span>
-        </div>
+          , it is.
+        </h1>
+
+        <p
+          className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-10"
+          style={{ color: "var(--text-secondary)" }}
+        >
+          Premium carbon credits for small grid enhancers — your fair share of a
+          market built around utilities.
+        </p>
+
+        <a
+          href="/app"
+          className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-base font-bold transition-all hover:scale-[1.02]"
+          style={{
+            background: "var(--text-primary)",
+            color: "var(--bg-page)",
+          }}
+        >
+          Launch App
+          <ArrowRight className="w-4 h-4" />
+        </a>
       </div>
     </section>
   );
@@ -939,7 +960,7 @@ function DiagramBlock({ number, title, subtitle, body, children }) {
 
 function CertinoSchemaAxo() {
   return (
-    <svg viewBox="0 0 1200 780" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" className="w-full h-full" style={{ minHeight: "500px" }}>
+    <svg viewBox="60 70 1080 630" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" className="w-full h-full block">
 
 
 <defs>
@@ -992,19 +1013,21 @@ function CertinoSchemaAxo() {
 <line x1="678.0" y1="620.0" x2="916.0" y2="620.0" stroke="#64748B" strokeWidth="1.7" strokeLinecap="round" strokeDasharray="5 6"><animate attributeName="stroke-dashoffset" from="0" to="-11" dur="1.0s" repeatCount="indefinite"/></line>
 <path d="M916.0 620.0 L905.0 624.5 L905.0 615.5 Z" fill="#64748B"/>
 <text x="797.0" y="609.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fontWeight="600" fill="#64748B" textAnchor="middle" letterSpacing="1.2">ELECTRICITY</text>
-<polygon points="251.8,567.3 206.8,593.3 206.8,562.1 251.8,536.1" fill="#2A4DD0" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
-<polygon points="193.2,533.5 251.8,567.3 251.8,536.1 193.2,502.3" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
-<polygon points="193.2,502.3 251.8,536.1 222.5,495.8" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
-<polygon points="251.8,536.1 206.8,562.1 177.5,521.8 222.5,495.8" fill="#FF8869" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
-<line x1="242.0" y1="522.7" x2="197.0" y2="548.7" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
-<line x1="232.3" y1="509.2" x2="187.2" y2="535.2" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
-<line x1="229.3" y1="549.1" x2="200.0" y2="508.8" stroke="#7A3A08" strokeWidth="0.7" opacity="0.7"/>
-<polygon points="218.0,547.8 227.0,553.0 227.0,536.1 218.0,530.9" fill="white" stroke="#0F172A" strokeWidth="0.9"/>
-<polygon points="234.9,569.5 223.6,576.0 223.6,563.0 234.9,556.5" fill="white" opacity="0.85"/>
-<polygon points="259.7,591.4 248.4,597.9 248.4,581.0 259.7,574.5" fill="#E8EFFF" stroke="#0F172A" strokeWidth="1"/>
-<polygon points="243.9,582.2 259.7,591.4 259.7,574.5 243.9,565.4" fill="white" stroke="#0F172A" strokeWidth="1"/>
-<polygon points="243.9,565.4 259.7,574.5 248.4,581.0 232.6,571.9" fill="#E8EFFF" stroke="#0F172A" strokeWidth="1"/>
-<path d="M251.3,574.9 L249.3,578.4 L251.3,578.4 L250.3,581.9 L253.8,577.9 L251.8,577.9 Z" fill="#2A4DD0" stroke="none"/>
+{/* Treetino — solar tree (replaces house) */}
+<path d="M195 608 L205 608 L203 555 L197 555 Z" fill="#E5E7EB" stroke="#0F172A" strokeWidth="1.4" strokeLinejoin="round"/>
+<ellipse cx="160" cy="555" rx="22" ry="7" transform="rotate(-25 160 555)" fill="#1E3A8A" stroke="#0F172A" strokeWidth="1" opacity="0.9"/>
+<ellipse cx="240" cy="555" rx="22" ry="7" transform="rotate(25 240 555)" fill="#1E3A8A" stroke="#0F172A" strokeWidth="1" opacity="0.9"/>
+<ellipse cx="170" cy="545" rx="32" ry="10" transform="rotate(-15 170 545)" fill="#2A4DD0" stroke="#0F172A" strokeWidth="1.1"/>
+<ellipse cx="230" cy="545" rx="32" ry="10" transform="rotate(15 230 545)" fill="#2A4DD0" stroke="#0F172A" strokeWidth="1.1"/>
+<ellipse cx="200" cy="540" rx="48" ry="13" fill="#3F60DC" stroke="#0F172A" strokeWidth="1.3"/>
+<ellipse cx="180" cy="528" rx="24" ry="8" transform="rotate(-18 180 528)" fill="#5C7AE5" stroke="#0F172A" strokeWidth="1"/>
+<ellipse cx="220" cy="528" rx="24" ry="8" transform="rotate(18 220 528)" fill="#5C7AE5" stroke="#0F172A" strokeWidth="1"/>
+<ellipse cx="200" cy="520" rx="30" ry="9" fill="#7B95EF" stroke="#0F172A" strokeWidth="1"/>
+<ellipse cx="200" cy="513" rx="14" ry="5" fill="#A4B6F4" stroke="#0F172A" strokeWidth="0.9"/>
+<line x1="158" y1="540" x2="242" y2="540" stroke="#0F172A" strokeWidth="0.5" opacity="0.25"/>
+<line x1="170" y1="545" x2="230" y2="545" stroke="#0F172A" strokeWidth="0.5" opacity="0.25"/>
+<ellipse cx="188" cy="535" rx="5" ry="1.6" fill="#FFFFFF" opacity="0.6"/>
+<ellipse cx="212" cy="540" rx="4" ry="1.4" fill="#FFFFFF" opacity="0.5"/>
 <line x1="600.0" y1="488.0" x2="645.0" y2="514.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
 <line x1="600.0" y1="488.0" x2="645.0" y2="566.0" stroke="#0F172A" strokeWidth="0.9" opacity="0.45"/>
 <line x1="600.0" y1="488.0" x2="600.0" y2="592.0" stroke="#FF6B4A" strokeWidth="2.2" strokeDasharray="3 4"><animate attributeName="stroke-dashoffset" from="0" to="-14" dur="0.8s" repeatCount="indefinite"/></line>
@@ -1052,7 +1075,7 @@ function CertinoSchemaAxo() {
 <polygon points="1034.6,560.9 1029.9,563.6 1029.9,556.4 1034.6,553.7" fill="white" opacity="0.7"/>
 <polygon points="1015.8,571.7 1011.2,574.4 1011.2,567.2 1015.8,564.5" fill="white" opacity="0.7"/>
 <polygon points="1015.1,546.3 1022.3,550.5 1022.3,539.7 1015.1,535.5" fill="#0F172A" stroke="none"/>
-<text x="200.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Household</text><text x="200.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">PRODUCER</text>
+<text x="200.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Treetino</text><text x="200.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="9" fill="#94A3B8" textAnchor="middle" letterSpacing="1.4">VICTRON COMPATIBLE DEVICE</text>
 <text x="600.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Grid</text><text x="600.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">ČEPS · DSO</text>
 <text x="1000.0" y="670.0" fontFamily="Fraunces, serif" fontSize="22" fontWeight="500" fill="#0F172A" textAnchor="middle" letterSpacing="-0.3">Company</text><text x="1000.0" y="692.0" fontFamily="JetBrains Mono, monospace" fontSize="10" fill="#94A3B8" textAnchor="middle" letterSpacing="2.5">BUYER</text>
 <path d="M600.0 100.0 L705.0 169.6 L705.0 289.6 L600.0 340.0 L495.0 289.6 L495.0 169.6 Z" fill="white" stroke="#2A4DD0" strokeWidth="2" filter="url(#softShadow)"/>
@@ -1076,22 +1099,21 @@ function CertinoSchemaAxo() {
 function ArchitectureDiagram() {
   return (
     <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-      {/* === LEFT 2/3: schema SVG — stretches to match right column height === */}
+      {/* === LEFT 2/3: schema fills card edge-to-edge === */}
       <div className="lg:col-span-2 flex">
         <div
-          className="flex-1 rounded-3xl p-6 md:p-8 flex items-center justify-center"
+          className="flex-1 rounded-3xl overflow-hidden flex"
           style={{
             background: "var(--bg-card)",
             border: "1px solid var(--border)",
             boxShadow: "var(--shadow-sm)",
-            minHeight: "560px",
           }}
         >
           <CertinoSchemaAxo />
         </div>
       </div>
 
-      {/* === RIGHT 1/3: step callouts stacked vertically === */}
+      {/* === RIGHT 1/3: step callouts stretch evenly to match schema height === */}
       <div className="lg:col-span-1 flex flex-col gap-4">
         <ArchCallout
           step="01"
@@ -1117,7 +1139,7 @@ function ArchitectureDiagram() {
 function ArchCallout({ step, title, body, accent = false }) {
   return (
     <div
-      className="p-5 rounded-2xl"
+      className="p-5 rounded-2xl flex-1 flex flex-col justify-start"
       style={{
         background: accent ? "var(--accent-soft)" : "var(--bg-card-soft)",
         border: `1px solid ${accent ? "rgba(15,59,71,0.18)" : "var(--border)"}`,
