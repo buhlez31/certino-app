@@ -786,7 +786,7 @@ function HowItWorks() {
       <div className="max-w-7xl mx-auto px-6">
         <SectionKicker label="How it works" tone="navy" />
 
-        <div className="md:max-w-3xl mt-6 mb-12 md:mb-16">
+        <div className="lg:w-2/3 mt-6 mb-12 md:mb-16">
           <h2
             className="display text-4xl md:text-5xl leading-[1.05]"
             style={{ letterSpacing: "-0.02em" }}
@@ -882,7 +882,7 @@ function Architecture() {
       <div className="max-w-7xl mx-auto px-6">
         <SectionKicker label="Protocol architecture" tone="accent" />
 
-        <div className="mt-6 mb-12 md:mb-14">
+        <div className="lg:w-2/3 mt-6 mb-12 md:mb-14">
           <h2
             className="display text-4xl md:text-5xl leading-[1.05]"
             style={{ letterSpacing: "-0.02em" }}
