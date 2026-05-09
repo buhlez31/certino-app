@@ -44,10 +44,9 @@ export default function CertinoLanding() {
       <ThemeStyles />
       <Header />
       <Hero />
+      <Problem />
       <Architecture />
       <HowItWorks />
-      <Problem />
-      <Solution />
       <Closing />
       <Footer />
     </div>
@@ -86,18 +85,18 @@ function Header() {
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
             <a
-              href="#problem"
-              className="transition-colors hover:opacity-70"
-              style={{ color: "var(--text-primary)" }}
-            >
-              The problem
-            </a>
-            <a
               href="#how-it-works"
               className="transition-colors hover:opacity-70"
               style={{ color: "var(--text-primary)" }}
             >
               How it works
+            </a>
+            <a
+              href="#problem"
+              className="transition-colors hover:opacity-70"
+              style={{ color: "var(--text-primary)" }}
+            >
+              The problem
             </a>
             <a
               href="#standards"
@@ -135,8 +134,14 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="relative pt-32 md:pt-40 pb-16 md:pb-24">
-      <div className="max-w-5xl mx-auto px-6 text-center">
+    <section
+      className="relative pt-32 md:pt-40 pb-16 md:pb-24"
+      style={{
+        background:
+          "radial-gradient(ellipse 70% 50% at 0% 0%, #F0E6F8 0%, transparent 55%), radial-gradient(ellipse 60% 60% at 100% 0%, #FFE8DC 0%, transparent 50%), radial-gradient(ellipse 80% 40% at 50% 100%, #E8EFFF 0%, transparent 60%), #F8F5EF",
+      }}
+    >
+      <div className="max-w-5xl mx-auto px-6 text-center relative">
         <span
           className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase mb-8"
           style={{
@@ -555,32 +560,34 @@ function Problem() {
       style={{ background: "var(--bg-card-soft)", borderTop: "1px solid var(--border)" }}
     >
       <div className="max-w-7xl mx-auto px-6">
-        <SectionKicker label="The problem" tone="navy" />
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          {/* Left: text */}
+          <div className="lg:col-span-5">
+            <SectionKicker label="The problem" tone="navy" />
+            <h2
+              className="display text-4xl md:text-5xl leading-[1.05] mt-6 mb-6"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              The grid doesn't run on annual averages.{" "}
+              <span className="italic" style={{ color: "var(--navy)" }}>
+                Neither should certificates.
+              </span>
+            </h2>
+            <p
+              className="text-base md:text-lg leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
+              Solar peaks at noon. Demand peaks at 8&nbsp;PM. Annual-matched
+              certificates pretend those kWh are equal — and hide the gas the
+              grid burns when the sun is gone.
+            </p>
+          </div>
 
-        <div className="max-w-4xl mt-6 mb-12 md:mb-16">
-          <h2
-            className="display text-4xl md:text-6xl leading-[1.05] mb-6"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            The grid doesn't run on annual averages.{" "}
-            <span className="italic" style={{ color: "var(--navy)" }}>
-              Neither should certificates.
-            </span>
-          </h2>
-          <p
-            className="text-lg md:text-xl leading-relaxed max-w-3xl"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            A solar farm produces at noon. Your fridge runs at 8&nbsp;PM. Today's
-            guarantee-of-origin market pretends those two kWh are the same kWh.
-            They are not. When demand peaks and the sun is gone, the grid burns
-            gas — and a certificate that doesn't track <em>when</em> energy was
-            made hides that gas behind clean accounting.
-          </p>
+          {/* Right: smaller day curve diagram */}
+          <div className="lg:col-span-7">
+            <DayCurveDiagram />
+          </div>
         </div>
-
-        {/* Day curve diagram — full width below the intro copy */}
-        <DayCurveDiagram />
       </div>
     </section>
   );
