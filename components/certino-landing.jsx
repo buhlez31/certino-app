@@ -588,7 +588,6 @@ function Problem() {
             <DayCurveDiagram />
           </div>
         </div>
-        <LaunchAppCta />
       </div>
     </section>
   );
