@@ -1,0 +1,122 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MockNFTMinter",
+  "sourceName": "contracts/MockNFTMinter.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "bundleQuantity",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "NFTMinted",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "bundleQuantity",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "producer",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_bundleQuantity",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "faceValueWh",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "fuel",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startTs",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "endTs",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "deviceLabel",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "issuanceId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        }
+      ],
+      "name": "issue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "lastTimestamp",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "totalMinted",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561000f575f80fd5b5061025c8061001d5f395ff3fe608060405234801561000f575f80fd5b506004361061004a575f3560e01c806314eb01e61461004e57806319d8ac6114610063578063a2309ff81461007e578063b70ef4d114610086575b5f80fd5b61006161005c36600461013a565b61008f565b005b61006c60025481565b60405190815260200160405180910390f35b61006c5f5481565b61006c60015481565b60015f808282546100a09190610201565b909155505060018a90556002859055604080518b8152602081018790527fd4c3f7782ecae0d1a12013592109b1bf02689d7f4e8ab653c75a61aea745e3be910160405180910390a15050505050505050505050565b5f8083601f840112610105575f80fd5b50813567ffffffffffffffff81111561011c575f80fd5b602083019150836020828501011115610133575f80fd5b9250929050565b5f805f805f805f805f805f6101208c8e031215610155575f80fd5b8b356001600160a01b0381161461016a575f80fd5b8b359a5060208c0135995060408c0135985067ffffffffffffffff8060608e01351115610195575f80fd5b6101a58e60608f01358f016100f5565b909950975060808d0135965060a08d0135955060c08d0135945060e08d013593506101008d01358110156101d7575f80fd5b506101e98d6101008e01358e016100f5565b81935080925050509295989b509295989b9093969950565b8082018082111561022057634e487b7160e01b5f52601160045260245ffd5b9291505056fea26469706673582212207c7c956b232a1e695d24b5eac2bb7924e82b0de9c8a88a62922318b5d283ed5564736f6c63430008180033",
+  "deployedBytecode": "0x608060405234801561000f575f80fd5b506004361061004a575f3560e01c806314eb01e61461004e57806319d8ac6114610063578063a2309ff81461007e578063b70ef4d114610086575b5f80fd5b61006161005c36600461013a565b61008f565b005b61006c60025481565b60405190815260200160405180910390f35b61006c5f5481565b61006c60015481565b60015f808282546100a09190610201565b909155505060018a90556002859055604080518b8152602081018790527fd4c3f7782ecae0d1a12013592109b1bf02689d7f4e8ab653c75a61aea745e3be910160405180910390a15050505050505050505050565b5f8083601f840112610105575f80fd5b50813567ffffffffffffffff81111561011c575f80fd5b602083019150836020828501011115610133575f80fd5b9250929050565b5f805f805f805f805f805f6101208c8e031215610155575f80fd5b8b356001600160a01b0381161461016a575f80fd5b8b359a5060208c0135995060408c0135985067ffffffffffffffff8060608e01351115610195575f80fd5b6101a58e60608f01358f016100f5565b909950975060808d0135965060a08d0135955060c08d0135945060e08d013593506101008d01358110156101d7575f80fd5b506101e98d6101008e01358e016100f5565b81935080925050509295989b509295989b9093969950565b8082018082111561022057634e487b7160e01b5f52601160045260245ffd5b9291505056fea26469706673582212207c7c956b232a1e695d24b5eac2bb7924e82b0de9c8a88a62922318b5d283ed5564736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

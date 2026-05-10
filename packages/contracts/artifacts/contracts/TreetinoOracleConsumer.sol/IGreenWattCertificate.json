@@ -1,0 +1,64 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IGreenWattCertificate",
+  "sourceName": "contracts/TreetinoOracleConsumer.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "producer",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "bundleQuantity",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "faceValueWh",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "fuel",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startTs",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "endTs",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "deviceLabel",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "issuanceId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "uri",
+          "type": "string"
+        }
+      ],
+      "name": "issue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

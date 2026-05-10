@@ -133,55 +133,60 @@ function HilierMark({ className = "" }) {
 
 const INITIAL_DEVICES = [
   {
-    id: "0x4F2A8B91",
-    name: "Vinohrady Rooftop",
+    id: "victron-yacht-151734",
+    name: "Victron Yacht",
     type: "Solar PV",
     icon: "solar",
-    location: "Prague Vinohrady, CZ",
+    location: "Prague, CZ",
     coords: { lat: 50.0755, lon: 14.4378 },
     capacityKw: 5.4,
-    nowKwh: 4.2,
-    todayKwh: 28.6,
+    nowKwh: 1.8,
+    todayKwh: 12.6,
     status: "producing",
-    commissioned: "2025-06-12",
+    commissioned: "2024-05-01",
     biddingZone: "CZ",
   },
   {
-    id: "0x8A12C4F0",
-    name: "HILIER Unit Brno-01",
-    type: "LDES + CHP",
-    icon: "hilier",
-    location: "Brno Černovice, CZ",
-    coords: { lat: 49.1741, lon: 16.6580 },
-    capacityKw: 1500,
-    nowKwh: 240,
-    todayKwh: 1860,
-    status: "discharging",
-    commissioned: "2026-02-04",
+    id: "sma-farm-998877",
+    name: "SMA Farm",
+    type: "Solar PV",
+    icon: "solar",
+    location: "Bratislava, SK",
+    coords: { lat: 48.1486, lon: 17.1077 },
+    capacityKw: 15.0,
+    nowKwh: 4.5,
+    todayKwh: 31.0,
+    status: "producing",
+    commissioned: "2023-11-15",
+    biddingZone: "SK",
+  },
+  {
+    id: "fronius-roof-112233",
+    name: "Fronius Roof",
+    type: "Solar PV",
+    icon: "solar",
+    location: "Brno, CZ",
+    coords: { lat: 49.1951, lon: 16.6068 },
+    capacityKw: 8.2,
+    nowKwh: 2.1,
+    todayKwh: 14.2,
+    status: "producing",
+    commissioned: "2022-08-20",
     biddingZone: "CZ",
   },
   {
-    id: "0xC3F88D17",
-    name: "Krušné Hory Turbine",
+    id: "2057381",
+    name: "ThingSpeak Turbine",
     type: "Wind",
     icon: "wind",
-    location: "Klínovec, CZ",
-    coords: { lat: 50.3957, lon: 12.9685 },
+    location: "London, UK",
+    coords: { lat: 51.5074, lon: -0.1278 },
     capacityKw: 2200,
-    nowKwh: null,
-    todayKwh: null,
-    status: "pending",
-    commissioned: null,
-    biddingZone: "CZ",
-    registrationInitiated: "2026-05-08T11:42:00Z",
-    queuePosition: 4,
-    estimatedApproval: "~2-4 hours",
-    approvalChecks: [
-      { id: "source", label: "Energy source verification", sub: "Wind onshore confirmed via grid operator", status: "passed" },
-      { id: "grid", label: "Grid connection verified", sub: "ČEPS bidding zone CZ · meter ID confirmed", status: "passed" },
-      { id: "dual", label: "Dual-issuance check", sub: "Querying neighbouring registries (AIB, REGO)…", status: "checking" },
-      { id: "meter", label: "Metering data validation", sub: "Awaiting 24h baseline", status: "queued" },
-    ],
+    nowKwh: 580,
+    todayKwh: 4200,
+    status: "producing",
+    commissioned: "2021-03-10",
+    biddingZone: "UK",
   },
 ];
 
@@ -202,7 +207,7 @@ export default function CertinoDemo() {
   const [route, setRoute] = useState("landing"); // "landing" | "dashboard"
   const [walletAddress, setWalletAddress] = useState(null); // 0x… when MetaMask connected
   const [walletError, setWalletError] = useState(null);
-  const [devices, setDevices] = useState([INITIAL_DEVICES[0]]); // pre-seed with one live device (Vinohrady Rooftop)
+  const [devices, setDevices] = useState(INITIAL_DEVICES);
   const [selectedId, setSelectedId] = useState(INITIAL_DEVICES[0].id);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [deregisterDevice, setDeregisterDevice] = useState(null);
@@ -657,38 +662,73 @@ function DeviceDetail({ device, onDeregister, onCancel }) {
   // OTE-CR threshold for premium hour (rolling 30-day Q3 ~ €90/MWh in this demo)
   const PREMIUM_THRESHOLD = 90;
 
-  // Hourly: production + OTE spot price + computed premium flag
-  // Solar story: midday glut → low price → not premium. Morning + evening peaks → premium.
-  const hourly = [
-    { h: "00", v: 0,    ote: 78,  premium: false },
-    { h: "02", v: 0,    ote: 65,  premium: false },
-    { h: "04", v: 0,    ote: 58,  premium: false },
-    { h: "06", v: 0.4,  ote: 92,  premium: true  }, // morning peak — premium
-    { h: "08", v: 1.8,  ote: 58,  premium: false },
-    { h: "10", v: 3.2,  ote: 22,  premium: false },
-    { h: "12", v: 4.4,  ote: 5,   premium: false }, // solar glut, near-zero price
-    { h: "13", v: 4.3,  ote: 8,   premium: false },
-    { h: "14", v: 4.2,  ote: 15,  premium: false }, // current hour — NOT premium
-    { h: "16", v: 3.6,  ote: 42,  premium: false },
-    { h: "18", v: 2.1,  ote: 145, premium: true  }, // evening peak — premium
-    { h: "20", v: 0.5,  ote: 88,  premium: false },
-  ];
+  const generateHourly = (device) => {
+    const isWind = device.icon === "wind";
+    const cap = device.capacityKw;
+    
+    return [
+      { h: "00", ote: 78 },
+      { h: "02", ote: 65 },
+      { h: "04", ote: 58 },
+      { h: "06", ote: 92 },
+      { h: "08", ote: 58 },
+      { h: "10", ote: 22 },
+      { h: "12", ote: 5 },
+      { h: "13", ote: 8 },
+      { h: "14", ote: 15 },
+      { h: "16", ote: 42 },
+      { h: "18", ote: 145 },
+      { h: "20", ote: 88 },
+    ].map((slot, i) => {
+      let v = 0;
+      if (isWind) {
+        const windFactor = 0.2 + 0.15 * Math.sin(i);
+        v = cap * windFactor;
+      } else {
+        const solarMultipliers = [0, 0, 0, 0.05, 0.3, 0.6, 0.8, 0.78, 0.7, 0.5, 0.1, 0];
+        v = cap * solarMultipliers[i];
+      }
+      
+      // Override the 14:00 hour to exactly match the live "nowKwh" reading for consistency
+      if (slot.h === "14" && device.nowKwh !== null) {
+        v = device.nowKwh;
+      }
+      
+      return {
+        ...slot,
+        v: Number(v.toFixed(1)),
+        premium: slot.ote > PREMIUM_THRESHOLD,
+      };
+    });
+  };
 
-  // Premium kWh produced today (issuance only happens during premium hours)
-  const todayPremiumKwh = hourly
-    .filter((h) => h.premium)
-    .reduce((acc, h) => acc + h.v, 0);
+  const hourly = generateHourly(device);
+
+  const todayPremiumKwh = hourly.filter((h) => h.premium).reduce((acc, h) => acc + h.v, 0);
   const todayTotalKwh = hourly.reduce((acc, h) => acc + h.v, 0);
   const premiumShare = todayTotalKwh > 0 ? (todayPremiumKwh / todayTotalKwh) * 100 : 0;
 
-  // Mock weekly premium distribution (kWh per day, last 7 days)
-  const weekPremium = [
-    { d: "Mon", v: 3.2 }, { d: "Tue", v: 1.8 }, { d: "Wed", v: 4.1 },
-    { d: "Thu", v: 0.0 }, { d: "Fri", v: 2.4 }, { d: "Sat", v: 5.3 },
-    { d: "Sun", v: 6.2 },
-  ];
-  const weekPremiumKwh = weekPremium.reduce((a, d) => a + d.v, 0); // 23.0
-  const weekRevenue = (weekPremiumKwh / 1000) * 40; // €/kWh × indicative €40/MWh
+  const generateWeekPremium = (device) => {
+    const scale = device.capacityKw / 5.4;
+    const isWind = device.icon === "wind";
+    return [
+      { d: "Mon", v: 3.2 * scale },
+      { d: "Tue", v: 1.8 * scale },
+      { d: "Wed", v: 4.1 * scale },
+      { d: "Thu", v: (isWind ? 5.5 : 0.0) * scale },
+      { d: "Fri", v: 2.4 * scale },
+      { d: "Sat", v: 5.3 * scale },
+      { d: "Sun", v: 6.2 * scale },
+    ].map(day => ({ ...day, v: Number(day.v.toFixed(1)) }));
+  };
+
+  const weekPremium = generateWeekPremium(device);
+  const weekPremiumKwh = weekPremium.reduce((a, d) => a + d.v, 0);
+  const weekRevenue = (weekPremiumKwh / 1000) * 40;
+  
+  const weekStandardKwh = weekPremiumKwh * 8.7;
+  const standardRevenue = (weekStandardKwh / 1000) * 5;
+  const totalMinted = weekPremiumKwh + weekStandardKwh;
 
   // Is the current hour premium? Drives the hero badge state.
   const currentHour = hourly.find((h) => h.h === "14");
@@ -903,11 +943,11 @@ function DeviceDetail({ device, onDeregister, onCancel }) {
         {/* Standard tier whisper — every hour mints, premium just earns more */}
         <div className="mt-5 pt-5 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-2 text-[11px] text-[var(--text-secondary)]">
           <span>
-            Standard tier this week: <strong className="text-[var(--text-secondary)] font-bold">200 kWh</strong>
-            {" "}@ ~€5/MWh ≈ <strong className="text-[var(--text-secondary)] font-bold">€1.00</strong>
+            Standard tier this week: <strong className="text-[var(--text-secondary)] font-bold">{weekStandardKwh.toFixed(0)} kWh</strong>
+            {" "}@ ~€5/MWh ≈ <strong className="text-[var(--text-secondary)] font-bold">€{standardRevenue.toFixed(2)}</strong>
           </span>
           <span className="mono text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider">
-            Total minted: 223 kWh
+            Total minted: {totalMinted.toFixed(0)} kWh
           </span>
         </div>
       </Card>

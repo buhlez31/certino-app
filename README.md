@@ -238,3 +238,38 @@ This is a hackathon demo. The following are intentionally not implemented:
 - Multi-issuer / multisig governance
 - Event indexer for transaction history
 - Authentication / database / multi-tenancy
+
+---
+
+# Treetino Protocol Architecture
+
+A decentralized, end-to-end ESG certificate protocol that seamlessly tokenizes real-world solar energy assets. Treetino acts as the bridge between physical energy production and on-chain crypto marketplaces, enabling energy providers to automatically mint verifiable ESG NFTs.
+
+## 🏗️ High-Level Architecture
+
+The protocol is divided into three distinct steps:
+
+1. **Energy Data Aggregation (Backend)**
+   - Connects to various proprietary solar inverter APIs (Victron, SMA, Fronius, Huawei, SolarEdge, Enphase).
+   - Standardizes the hardware data into a unified, EnergyTag-compliant schema (GPS coordinates, time, kWh, FuelType).
+   
+2. **Chainlink Oracle & Keepers (On-Chain Bridge)**
+   - **Keepers (Automation)**: A smart contract (`TreetinoKeeper`) triggered on an hourly interval. It pings the Oracle to pull the latest hour's production.
+   - **Oracle Consumer**: A smart contract (`TreetinoOracleConsumer`) utilizing Chainlink Functions. It executes JavaScript off-chain to pull the standardized data from the Aggregation Backend.
+   
+3. **NFT Minting & Marketplace (Downstream Ecosystem)**
+   - Once the Chainlink DON (Decentralized Oracle Network) verifies and returns the data, the Oracle contract automatically triggers the `mintNFT` function on the downstream ERC-721 contract.
+   - The verified ESG certificates are then listed on third-party marketplaces.
+
+## 🚀 The End-to-End Flow
+
+Here is the exact lifecycle of a single hour of energy production:
+
+1. The solar panel produces `4.2 kWh` of energy.
+2. The `TreetinoKeeper` contract realizes 1 hour has passed and triggers `performUpkeep`.
+3. The `TreetinoOracleConsumer` asks the Chainlink DON to execute `ChainlinkRequest.js`.
+4. Chainlink nodes reach out to your Aggregator Backend.
+5. The Aggregator authenticates with the solar inverter (e.g., Victron), formats the `4.2 kWh` response into an integer (e.g., `420`), and returns it to Chainlink.
+6. The Chainlink DON forms a consensus and sends the verified `420` value back to the `TreetinoOracleConsumer` on the blockchain.
+7. The Oracle Consumer contract records the timestamp and immediately calls `mintNFT(420, timestamp)` on the NFT contract.
+8. The NFT is minted and immediately appears in the frontend app and the marketplace.

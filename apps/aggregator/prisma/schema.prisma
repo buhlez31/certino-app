@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Installation {
+  id          String         @id @default(uuid())
+  provider    String         // e.g., 'Victron', 'SMA', 'Fronius'
+  credentials String         // Encrypted credentials or API token
+  gpsLat      Float
+  gpsLong     Float
+  siteId      String         // The provider's internal ID for this site
+  fuelType    String         @default("Solar")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  records     EnergyRecord[]
+}
+
+model EnergyRecord {
+  id             String       @id @default(uuid())
+  installationId String
+  installation   Installation @relation(fields: [installationId], references: [id])
+  timestamp      DateTime     // The hour/day this record represents
+  kwhProduced    Float
+  rawJson        String?      // Optional raw payload for debugging
+  createdAt      DateTime     @default(now())
+
+  @@unique([installationId, timestamp])
+}
